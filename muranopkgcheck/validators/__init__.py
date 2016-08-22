@@ -14,8 +14,10 @@
 
 from muranopkgcheck.validators import manifest
 from muranopkgcheck.validators import muranopl
+from muranopkgcheck.validators import ui
 
 VALIDATORS = [
     manifest.ManifestValidator,
     muranopl.MuranoPLValidator,
+    ui.UiValidator,
 ]
