@@ -77,6 +77,16 @@ class BaseValidator(object):
             return True
         return False
 
+    def _check_ns_fqn_name(self, ns_fqn):
+        if isinstance(ns_fqn, six.string_types):
+            if ':' in ns_fqn:
+                ns, fqn = ns_fqn.split(':', 1)
+                if NAME_REGEX.match(ns) and FQN_REGEX.match(fqn):
+                    return True
+            elif FQN_REGEX.match(ns_fqn):
+                return True
+        return False
+
 
 class YamlValidator(BaseValidator):
     def __init__(self, loaded_package, _filter='.*', allows_multi=False):

@@ -13,7 +13,9 @@
 #    under the License.
 
 from muranopkgcheck.validators import manifest
+from muranopkgcheck.validators import muranopl
 
 VALIDATORS = [
     manifest.ManifestValidator,
+    muranopl.MuranoPLValidator,
 ]
