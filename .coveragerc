@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = muranopkgcheck
+
+[report]
+ignore_errors = True
