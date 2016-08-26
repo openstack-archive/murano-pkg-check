@@ -18,6 +18,7 @@ import six
 
 from muranopkgcheck import error
 from muranopkgcheck.validators import base
+from muranopkgcheck import yaml_loader
 
 
 class ManifestValidator(base.YamlValidator):
@@ -33,10 +34,16 @@ class ManifestValidator(base.YamlValidator):
         self.add_checker(self._valid_tags, 'Tags', False)
         self.add_checker(self._valid_require, 'Require', False)
         self.add_checker(self._valid_type, 'Type')
-        self.add_checker(self._valid_string, 'Description')
+        self.add_checker(self._valid_description, 'Description')
         self.add_checker(self._valid_ui, 'UI', False)
         self.add_checker(self._valid_logo, 'Logo', False)
         self.add_checker(self._valid_logo_ui_existance)
+
+    def _valid_description(self, desc):
+        if not isinstance(desc, six.string_types) and\
+                not isinstance(desc, yaml_loader.YamlNull):
+            yield error.report.E030('Value is not valid string "{0}"'
+                                    .format(desc), desc)
 
     def _valid_format(self, value):
         format_ = str(value).split('/', 1)

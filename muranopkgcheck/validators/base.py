@@ -62,7 +62,7 @@ class BaseValidator(object):
         return itertools.chain(*chain_of_suits)
 
     def _valid_string(self, value):
-        if not isinstance(value, (int, float, bool, six.string_types)):
+        if not isinstance(value, six.string_types):
             yield error.report.E040('Value is not a string "{0}"'
                                     .format(value),
                                     value)

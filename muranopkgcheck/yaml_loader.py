@@ -35,7 +35,8 @@ class YamlMetadata(object):
 
 
 class YamlObject(object):
-    pass
+    def __init__(self, value=None):
+        self.value = value
 
 
 class YamlMapping(YamlObject, dict):
@@ -48,6 +49,11 @@ class YamlSequence(YamlObject, list):
 
 class YamlString(YamlObject, six.text_type):
     pass
+
+
+class YamlNull(YamlObject):
+    def __str__(self):
+        return 'null'
 
 
 BaseLoader = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
@@ -74,6 +80,11 @@ class YamlLoader(BaseLoader):
         data.update(value)
         data.__yaml_meta__ = node.start_mark
 
+    def construct_yaml_null(self, node):
+        value = YamlNull(node)
+        value.__yaml_meta__ = node.start_mark
+        return value
+
 YamlLoader.add_constructor(
     u'tag:yaml.org,2002:seq',
     YamlLoader.construct_yaml_seq)
@@ -85,3 +96,7 @@ YamlLoader.add_constructor(
 YamlLoader.add_constructor(
     u'tag:yaml.org,2002:map',
     YamlLoader.construct_yaml_map)
+
+YamlLoader.add_constructor(
+    u'tag:yaml.org,2002:null',
+    YamlLoader.construct_yaml_null)
