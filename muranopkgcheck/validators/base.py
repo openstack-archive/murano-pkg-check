@@ -51,15 +51,8 @@ class BaseValidator(object):
         self._filter = _filter
 
     @abc.abstractmethod
-    def _run_single(self, file_):
-        pass
-
     def run(self):
-        chain_of_suits = []
-        for filename in self._loaded_pkg.search_for(self._filter):
-            file_ = self._loaded_pkg.read(filename)
-            chain_of_suits.append(self._run_single(file_))
-        return itertools.chain(*chain_of_suits)
+        pass
 
     def _valid_string(self, value):
         if not isinstance(value, (int, float, bool, six.string_types)):
@@ -102,6 +95,13 @@ class YamlValidator(BaseValidator):
             checkers['required'] = False
         elif required:
             checkers['required'] = True
+
+    def run(self):
+        chain_of_suits = []
+        for filename in self._loaded_pkg.search_for(self._filter):
+            file_ = self._loaded_pkg.read(filename)
+            chain_of_suits.append(self._run_single(file_))
+        return itertools.chain(*chain_of_suits)
 
     def _run_single(self, file_):
         reports_chain = []
