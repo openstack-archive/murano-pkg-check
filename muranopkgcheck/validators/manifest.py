@@ -51,7 +51,8 @@ class ManifestValidator(base.YamlValidator):
 
     def _valid_fullname(self, fullname):
         if not self._check_fqn_name(fullname):
-            yield error.report.E073('Invalid FullName "{0}"', fullname)
+            yield error.report.E073('Invalid FullName "{0}"'
+                                    .format(fullname), fullname)
 
     def _valid_tags(self, value):
         if not isinstance(value, list):

@@ -68,7 +68,7 @@ class BaseValidator(object):
                                     value)
 
     def _check_name(self, name):
-        if NAME_REGEX.match(name):
+        if isinstance(name, six.string_types) and NAME_REGEX.match(name):
             return True
         return False
 
