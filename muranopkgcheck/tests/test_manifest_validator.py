@@ -59,6 +59,11 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
         self.g = self.mv._valid_require([1, 2, 3])
         self.assertIn('Require is not a dict type', next(self.g).message)
 
+    def test_wrong_require_fqn(self):
+        self.g = self.mv._valid_require({'io.murano!': '1.3.2'})
+        self.assertIn('Require key is not valid FQN "io.murano!"',
+                      next(self.g).message)
+
     def test_not_existing_file(self):
         data = {'org.openstack.Flow': 'FlowClassifier.yaml',
                 'org.openstack.Instance': 'Instance.yaml'}
