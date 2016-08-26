@@ -14,6 +14,8 @@
 
 import mock
 
+import yaml.error
+
 from muranopkgcheck import consts
 from muranopkgcheck import pkg_loader
 from muranopkgcheck.tests import base
@@ -33,7 +35,7 @@ class FileWrapperTest(base.TestCase):
             lambda f: mock.mock_open(read_data='!@#$%')()
         f = pkg_loader.FileWrapper(fake_pkg, 'fake_path')
         self.assertEqual('!@#$%', f.raw())
-        self.assertEqual(None, f.yaml())
+        self.assertRaises(yaml.error.YAMLError, f.yaml)
 
 
 class FakeLoader(pkg_loader.BaseLoader):

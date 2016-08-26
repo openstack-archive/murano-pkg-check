@@ -14,8 +14,10 @@
 
 
 import abc
+import io
 import os
 import re
+import sys
 import zipfile
 
 import six
@@ -34,17 +36,19 @@ class FileWrapper(object):
         self._path = path
         with pkg.open_file(path) as file_:
             self._raw = file_.read()
-
-        with pkg.open_file(path) as file_:
-            try:
-                self._yaml = list(yaml.load_all(file_, yaml_loader.YamlLoader))
-            except yaml.YAMLError:
-                self._yaml = None
+            self._name = file_.name
+        self._yaml = None
+        self._pkg = pkg
 
     def raw(self):
         return self._raw
 
     def yaml(self):
+        if self._yaml is None:
+            sio = io.StringIO(six.text_type(self.raw()))
+            setattr(sio, 'name', self._name)
+            self._yaml = list(yaml.load_all(sio,
+                                            yaml_loader.YamlLoader))
         return self._yaml
 
 
@@ -92,14 +96,19 @@ class BaseLoader(object):
 
     def try_set_format(self):
         if self.exists(consts.MANIFEST_PATH):
-            manifest = self.read(consts.MANIFEST_PATH).yaml()
-            if manifest and 'Format' in manifest:
-                if '/' in str(manifest['Format']):
-                    fmt, version = manifest['Format'].split('/', 1)
-                    self.format = fmt
-                    self.format_version = version
-                else:
-                    self.format_version = str(manifest['Format'])
+            try:
+                manifest = self.read(consts.MANIFEST_PATH).yaml()
+            except yaml.YAMLError:
+                LOG.warning('Unable to parse Manifest yaml',
+                            exc_info=sys.exc_info())
+            else:
+                if manifest and 'Format' in manifest:
+                    if '/' in str(manifest['Format']):
+                        fmt, version = manifest['Format'].split('/', 1)
+                        self.format = fmt
+                        self.format_version = version
+                    else:
+                        self.format_version = str(manifest['Format'])
 
 
 class DirectoryLoader(BaseLoader):

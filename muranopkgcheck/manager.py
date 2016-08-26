@@ -57,9 +57,9 @@ class Manager(object):
         errors = []
         while True:
             try:
-                e = next(error_chain, None)
-                if e is None:
-                    break
+                e = next(error_chain)
+            except StopIteration:
+                break
             except Exception:
                 LOG.exception('Checker failed')
                 e = error.report.E000(
