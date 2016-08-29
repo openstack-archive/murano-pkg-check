@@ -46,6 +46,11 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
         self.assertIn('Not supported format "Heat/1.0"',
                       next(self.g).message)
 
+    def test_heat_format_invalid_version_also(self):
+        self.g = self.mv._valid_format('Heat/0.1.0')
+        self.assertIn('Not supported format "Heat/0.1.0"',
+                      next(self.g).message)
+
     def test_unsupported_format(self):
         self.g = self.mv._valid_format('Heat.HOT')
         self.assertIn('Not supported format version "Heat.HOT"',

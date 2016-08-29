@@ -42,8 +42,9 @@ class ManifestValidator(base.YamlValidator):
         format_ = str(value).split('/', 1)
         if len(format_) > 1:
             if format_[0] != 'MuranoPL':
-                yield error.report.E030('Not supported format "{0}"'
+                yield error.report.W030('Not supported format "{0}"'
                                         .format(value), value)
+                return
         ver = format_[-1]
         if str(ver) not in ['1.0', '1.1', '1.2', '1.3', '1.4']:
             yield error.report.W030('Not supported format version "{0}"'
