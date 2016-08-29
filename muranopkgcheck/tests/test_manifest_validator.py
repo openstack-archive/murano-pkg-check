@@ -68,6 +68,9 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
         self.assertIn('Not supported format version "Heat.HOT"',
                       next(self.g).message)
 
+    def test_type(self):
+        self.g = self.mv._valid_type('Application')
+
     def test_wrong_type(self):
         self.g = self.mv._valid_type('Shared Library')
         self.assertIn('Type is invalid "Shared Library"', next(self.g).message)
@@ -85,6 +88,9 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
         self.g = self.mv._valid_require({'io.murano!': '1.3.2'})
         self.assertIn('Require key is not valid FQN "io.murano!"',
                       next(self.g).message)
+
+    def test_require(self):
+        self.g = self.mv._valid_require({'aaa.bbb': '>= 1.0.0'})
 
     def test_not_existing_file(self):
         data = {'org.openstack.Flow': 'FlowClassifier.yaml',
@@ -130,8 +136,22 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
         self.assertIn('UI is not a string', next(self.g).message)
 
     def test_tags(self):
+        self.g = self.mv._valid_tags(['whatever'])
+
+    def test_tags_false(self):
         self.g = self.mv._valid_tags('whatever')
         self.assertIn('Tags should be a list', next(self.g).message)
+
+    def test_logo_ui_existance(self):
+        self.g = self.mv._valid_logo_ui_existance({'Logo': 0, 'UI': 0})
+
+    def test_logo_ui_existance_false(self):
+        self.loaded_package.exists.return_value = True
+        self.g = self.mv._valid_logo_ui_existance({})
+
+    def test_fullname_wrong(self):
+        self.g = self.mv._valid_fullname('aaa.bbb.ccc#')
+        self.assertIn('Invalid FullName "aaa.bbb.ccc#"', next(self.g).message)
 
     def test_fullname(self):
         self.g = self.mv._valid_fullname('invalid.fullname.!@#@')

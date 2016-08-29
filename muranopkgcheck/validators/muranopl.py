@@ -53,8 +53,8 @@ class MuranoPLValidator(base.YamlValidator):
             for imp in import_:
                 yield self._valid_import(imp, False)
         elif not self._check_ns_fqn_name(import_):
-            yield error.report.E025('Wrong namespace or FNQ of extended class '
-                                    '{0}'.format(import_), import_)
+            yield error.report.E025('Wrong namespace of import "{0}"'
+                                    .format(import_), import_)
 
     def _valid_name(self, value):
         if value.startswith('__') or \
@@ -71,7 +71,7 @@ class MuranoPLValidator(base.YamlValidator):
                 yield self._valid_extends(cls, False)
         elif isinstance(value, six.string_types):
             if not self._check_ns_fqn_name(value):
-                yield error.report.E025('Wrong FNQ of extended class {0}'
+                yield error.report.E025('Wrong FNQ of extended class "{0}"'
                                         .format(value), value)
         else:
             yield error.report.E025("Wrong type of Extends field", value)

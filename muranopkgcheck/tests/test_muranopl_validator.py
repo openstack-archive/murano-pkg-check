@@ -60,6 +60,16 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         self.loaded_package.format_version = '1.4'
         self.mpl_validator = MuranoPLValidator(self.loaded_package)
 
+    def test_import(self):
+        self.g = self.mpl_validator._valid_import(['aaa.bbb', 'ccc.ddd',
+                                                   'fff', 'w_ww'])
+
+    def test_import_error(self):
+        self.g = self.mpl_validator._valid_import(['aaa.bbb', 'ccc.ddd',
+                                                   'fff', 'w_ww#'])
+        self.assertIn('Wrong namespace of import "w_ww#"',
+                      next(self.g).message)
+
     def test_double_underscored_name(self):
         self.g = self.mpl_validator._valid_name('__Instance')
         self.assertIn('Invalid class name "__Instance"', next(self.g).message)
@@ -73,6 +83,11 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         name = 'white space'
         self.g = self.mpl_validator._valid_name(name)
         self.assertIn('Invalid class name "white space"',
+                      next(self.g).message)
+
+    def test_properties_list(self):
+        self.g = self.mpl_validator._valid_properties([])
+        self.assertIn('Properties should be a dict',
                       next(self.g).message)
 
     def test_properties_usage(self):
@@ -212,6 +227,11 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         self.assertIn('Contract is not valid yaql "1"',
                       next(self.g).message)
 
+    def test_contract_list_with_min_length(self):
+        p_dict = deepcopy(MURANOPL_BASE['Properties'])
+        p_dict['ports']['Contract'] = ['$.int()', 1]
+        self.g = self.mpl_validator._valid_properties(p_dict)
+
     def test_contract_a_list_with_invalid_yaql(self):
         p_dict = deepcopy(MURANOPL_BASE['Properties'])
         p_dict['ports']['Contract'] = ['$.string(']
@@ -226,11 +246,24 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         self.assertIn('Wrong type of Extends field',
                       next(self.g).message)
 
+    def test_extends_fqn_wrong(self):
+        p_dict = deepcopy(MURANOPL_BASE['Extends'])
+        p_dict = ['abc:def.afdsa.das#']
+        self.g = self.mpl_validator._valid_extends(p_dict)
+        self.assertIn('Wrong FNQ of extended class "abc:def.afdsa.das#"',
+                      next(self.g).message)
+
     def test_extends_is_not_valid(self):
         p_dict = deepcopy(MURANOPL_BASE['Extends'])
         p_dict = 4
         self.g = self.mpl_validator._valid_extends(p_dict)
         self.assertIn('Wrong type of Extends field',
+                      next(self.g).message)
+
+    def test_method_invalid_name(self):
+        m_dict = {'foo#': {}}
+        self.g = self.mpl_validator._valid_methods(m_dict)
+        self.assertIn('Invalid name of method "foo#"',
                       next(self.g).message)
 
     def test_method_unknown_keyword(self):
@@ -323,4 +356,10 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
     def test_wrong_method_arguments_usage(self):
         self.g = self.mpl_validator._valid_argument_usage('Standard1')
         self.assertIn('Usage is invalid value "Standard1"',
+                      next(self.g).message)
+
+    def test_method_arguments_invalid_name(self):
+        self.g = self.mpl_validator._valid_arguments(
+            [{'a#': {'Contract': '$.int()'}}])
+        self.assertIn('Invalid name of argument "a#"',
                       next(self.g).message)
