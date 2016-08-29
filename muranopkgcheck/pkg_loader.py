@@ -27,7 +27,7 @@ from muranopkgcheck import consts
 from muranopkgcheck import log
 from muranopkgcheck import yaml_loader
 
-LOG = log.get_logger(__name__)
+LOG = log.getLogger(__name__)
 
 
 class FileWrapper(object):
@@ -63,7 +63,7 @@ class BaseLoader(object):
     @classmethod
     @abc.abstractmethod
     def _try_load(cls, path):
-        pass
+        pass    # pragma: no cover
 
     @classmethod
     def try_load(cls, path):
@@ -74,15 +74,15 @@ class BaseLoader(object):
 
     @abc.abstractmethod
     def list_files(self, subdir=None):
-        pass
+        pass    # pragma: no cover
 
     @abc.abstractmethod
     def open_file(self, path, mode='r'):
-        pass
+        pass    # pragma: no cover
 
     @abc.abstractmethod
     def exists(self, name):
-        pass
+        pass    # pragma: no cover
 
     def search_for(self, regex='.*', subdir=None):
         r = re.compile(regex)
@@ -103,12 +103,12 @@ class BaseLoader(object):
                             exc_info=sys.exc_info())
             else:
                 if manifest and 'Format' in manifest:
-                    if '/' in str(manifest['Format']):
+                    if '/' in six.text_type(manifest['Format']):
                         fmt, version = manifest['Format'].split('/', 1)
                         self.format = fmt
                         self.format_version = version
                     else:
-                        self.format_version = str(manifest['Format'])
+                        self.format_version = six.text_type(manifest['Format'])
 
 
 class DirectoryLoader(BaseLoader):
@@ -185,13 +185,14 @@ class ZipLoader(BaseLoader):
 PACKAGE_LOADERS = [DirectoryLoader, ZipLoader]
 
 
-def load_package(path):
+def load_package(path, quiet=False):
     for loader_cls in PACKAGE_LOADERS:
         loader = loader_cls.try_load(path)
         if loader is not None:
             return loader
         else:
-            LOG.debug("{} failed to load '{}'"
-                      "".format(loader_cls.__name__, path))
+            if not quiet:
+                LOG.debug("{} failed to load '{}'"
+                          "".format(loader_cls.__name__, path))
     else:
-        raise ValueError("Cannot load package: '{}'".format(path))
+        raise ValueError("Can not load package: '{}'".format(path))

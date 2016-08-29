@@ -14,32 +14,41 @@
 
 import logging
 
+import six
+
 CRITICAL = logging.CRITICAL
 ERROR = logging.ERROR
 WARNING = logging.WARNING
 INFO = logging.INFO
 DEBUG = logging.DEBUG
 
-LOG_FORMAT = "%(asctime)s %(name)s:%(lineno)d %(levelname)s %(message)s"
+LOG_FORMAT = "%(name)s:%(lineno)d %(levelname)s %(message)s"
 DEFAULT_LEVEL = logging.DEBUG
-LOG_HANDLER = None
-LOG_LEVEL = DEFAULT_LEVEL
+_loggers = {}
+_logging = None
 
 
-def setup(log_format=LOG_FORMAT, level=DEFAULT_LEVEL):
+def setup(external_logging=None, log_format=LOG_FORMAT, level=DEFAULT_LEVEL):
+
+    if external_logging:
+        global _logging
+        _logging = external_logging
+        return
+
     console_log_handler = logging.StreamHandler()
     console_log_handler.setFormatter(logging.Formatter(log_format))
-    global LOG_HANDLER, LOG_LEVEL
-    LOG_HANDLER = console_log_handler
-    LOG_LEVEL = level
+    global _loggers
+    for logger in six.itervalues(_loggers):
+        logger.setLevel(level)
+        for h in logger.handlers:
+            logger.removeHandler(h)
+        logger.addHandler(console_log_handler)
 
 
-def get_logger(name):
-    logger = logging.getLogger(name)
-    for h in logger.handlers:
-        logger.removeHandler(h)
-    logger.addHandler(LOG_HANDLER)
-    logger.setLevel(LOG_LEVEL)
-    return logger
-
-setup()
+def getLogger(name):
+    global _logging, _loggers
+    if _logging:
+        return _logging.getLogger(name)
+    if name not in _loggers:
+        _loggers[name] = logging.getLogger(name)
+    return _loggers[name]

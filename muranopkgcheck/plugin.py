@@ -22,8 +22,8 @@ class Plugin(object):
 
     @abc.abstractmethod
     def validators(self):
-        pass
+        pass    # pragma: no cover
 
     @abc.abstractmethod
     def errors(self):
-        pass
+        pass    # pragma: no cover

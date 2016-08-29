@@ -19,8 +19,9 @@ import sys
 import six
 
 from muranopkgcheck import log
+from muranopkgcheck import manager
 
-LOG = log.get_logger(__name__)
+LOG = log.getLogger(__name__)
 
 
 def parse_cli_args(args=None):
@@ -49,7 +50,12 @@ def parse_cli_args(args=None):
                         dest='verbose',
                         default=0,
                         action='count',
-                        help='Verbosity level')
+                        help='Verbosity level. -v for ERROR. -vv for INFO')
+
+    parser.add_argument('--debug',
+                        dest='debug',
+                        action='store_true',
+                        help='Set logging level to DEBUG')
 
     parser.add_argument('--discover',
                         dest='discover',
@@ -68,15 +74,14 @@ def setup_logs(args):
         log.setup(level=log.CRITICAL)
     elif args.verbose == 1:
         log.setup(level=log.ERROR)
-    elif args.verbose == 2:
-        log.setup(level=log.INFO)
     else:
+        log.setup(level=log.INFO)
+    if args.debug:
         log.setup(level=log.DEBUG)
 
 
-def run(args, pkg_path=None):
-    from muranopkgcheck import manager
-    m = manager.Manager(pkg_path or args.path)
+def run(args, pkg_path=None, quiet_load=False):
+    m = manager.Manager(pkg_path or args.path, quiet_load=quiet_load)
     m.load_plugins()
     if args.select:
         select = args.select.split(',')
@@ -100,7 +105,7 @@ def discover(args):
                 continue
             try:
                 path = os.path.join(dirpath, item)
-                pkg_errors = run(args, path)
+                pkg_errors = run(args, path, quiet_load=True)
                 LOG.info("Package {} discovered".format(path))
                 if pkg_errors:
                     errors.append("Errors in package {}\n{}\n"
@@ -113,20 +118,17 @@ def discover(args):
 def main():
     args = parse_cli_args()
     setup_logs(args)
-    global LOG
-    LOG = log.get_logger(__name__)
     try:
         if args.discover:
             errors = discover(args)
         else:
             errors = run(args)
-
     except ValueError as e:
-        LOG.critical(e)
+        LOG.error(six.text_type(e))
+        print(six.text_type(e))
         return 2
     except Exception as e:
-        LOG.critical(six.text_type(e))
-        LOG.exception(e)
+        LOG.critical(six.text_type(e), exc_info=sys.exc_info())
         return 3
     if errors:
         print(errors)

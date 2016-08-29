@@ -12,9 +12,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import abc
 import itertools
+import pprint
+import sys
 import types
 
+import six
 import stevedore
 
 from muranopkgcheck import error
@@ -22,13 +26,15 @@ from muranopkgcheck import log
 from muranopkgcheck import pkg_loader
 from muranopkgcheck.validators import VALIDATORS
 
-LOG = log.get_logger(__name__)
+LOG = log.getLogger(__name__)
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Formatter(object):
 
+    @abc.abstractmethod
     def format(self, error):
-        pass
+        pass    # pragma: no cover
 
 
 class PlainTextFormatter(Formatter):
@@ -48,9 +54,9 @@ class PlainTextFormatter(Formatter):
 
 class Manager(object):
 
-    def __init__(self, pkg_path):
-        self.pkg = pkg_loader.load_package(pkg_path)
-        self.validators = VALIDATORS
+    def __init__(self, pkg_path, quiet_load=False):
+        self.pkg = pkg_loader.load_package(pkg_path, quiet=quiet_load)
+        self.validators = list(VALIDATORS)
         self.plugins = None
 
     def _to_list(self, error_chain, select=None, ignore=None):
@@ -61,16 +67,36 @@ class Manager(object):
             except StopIteration:
                 break
             except Exception:
-                LOG.exception('Checker failed')
-                e = error.report.E000(
-                    'Checker failed more information in logs')
-
+                exc_info = sys.exc_info()
+                tb = exc_info[2]
+                while tb.tb_next:
+                    tb = tb.tb_next
+                validator_class = tb.tb_frame.f_locals.get('self')
+                check_name = tb.tb_frame.f_code.co_name
+                check_locals = tb.tb_frame.f_locals.copy()
+                check_locals.pop('self', None)
+                if validator_class:
+                    msg = ('Checker {} from {} failed!'
+                           ''.format(check_name,
+                                     validator_class.__class__.__name__))
+                else:
+                    msg = ('Checker {} failed!'
+                           ''.format(check_name))
+                LOG.error('{} {}\n{}'.format(msg,
+                                             'Checker locals:',
+                                             pprint.pformat(check_locals)),
+                          exc_info=exc_info)
+                e = error.report.E000(msg + ' See more information in logs.')
             if isinstance(e, types.GeneratorType):
                 errors.extend(self._to_list(e, select, ignore))
             else:
-                if ((select and e.code not in select)
-                   or (ignore and e.code in ignore)):
+                if ((select and e.code not in select) or
+                        (ignore and e.code in ignore)):
+                    LOG.debug('Skipped: {code} {message}'
+                              ''.format(**e.to_dict()))
                     continue
+                LOG.debug('Reported: {code} {message}'
+                          ''.format(**e.to_dict()))
                 errors.append(e)
 
         return sorted(errors, key=lambda err: err.code)

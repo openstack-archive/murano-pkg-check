@@ -87,6 +87,13 @@ class BaseLoaderTest(base.TestCase):
             self.assertEqual(consts.DEFAULT_FORMAT, loader.format)
             self.assertEqual('4.2', loader.format_version)
 
+            m_load.return_value = FakeLoader('fake')
+            m_file.yaml.return_value = {}
+            loader = FakeLoader.try_load('fake')
+            self.assertEqual(consts.DEFAULT_FORMAT, loader.format)
+            self.assertEqual(consts.DEFAULT_FORMAT_VERSION,
+                             loader.format_version)
+
     def test_search_for(self):
         fake = FakeLoader('fake')
         self.assertEqual(['1.yaml', 'sub/3.yaml'],

@@ -21,7 +21,7 @@ import six
 from muranopkgcheck import error
 from muranopkgcheck import log
 
-LOG = log.get_logger(__name__)
+LOG = log.getLogger(__name__)
 FQN_REGEX = re.compile('^([a-zA-Z_$][\w$]*\.)*[a-zA-Z_$][\w$]*$')
 NAME_REGEX = re.compile('^[A-Za-z_][\w]*$')
 
