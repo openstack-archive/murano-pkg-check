@@ -14,6 +14,8 @@
 
 
 import os.path
+
+import semantic_version
 import six
 
 from muranopkgcheck import error
@@ -26,7 +28,7 @@ class ManifestValidator(base.YamlValidator):
                                                 'manifest.yaml$')
         self.add_checker(self._valid_format, 'Format', False)
         self.add_checker(self._valid_string, 'Author', False)
-        self.add_checker(self._valid_string, 'Version', False)
+        self.add_checker(self._valid_version, 'Version', False)
         self.add_checker(self._valid_fullname, 'FullName')
         self.add_checker(self._valid_string, 'Name', False)
         self.add_checker(self._valid_classes, 'Classes', False)
@@ -70,6 +72,14 @@ class ManifestValidator(base.YamlValidator):
         if value not in ('Application', 'Library'):
             yield error.report.E071('Type is invalid "{0}"'.format(value),
                                     value)
+
+    def _valid_version(self, version):
+        try:
+            semantic_version.Version.coerce(str(version))
+        except ValueError:
+            yield error.report.E071('Version format should be compatible with '
+                                    'SemVer not "{0}"'.format(version),
+                                    version)
 
     def _valid_logo_ui_existance(self, ast):
         if 'Logo' not in ast:

@@ -55,6 +55,11 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
         self.g = self.mv._valid_type('Shared Library')
         self.assertIn('Type is invalid "Shared Library"', next(self.g).message)
 
+    def test_incorrect_package_version(self):
+        self.g = self.mv._valid_version('a1.3')
+        self.assertIn('Version format should be compatible with SemVer '
+                      'not "a1.3"', next(self.g).message)
+
     def test_wrong_require_type(self):
         self.g = self.mv._valid_require([1, 2, 3])
         self.assertIn('Require is not a dict type', next(self.g).message)
