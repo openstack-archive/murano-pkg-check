@@ -24,6 +24,7 @@ import six
 import yaml
 
 from muranopkgcheck import consts
+from muranopkgcheck.i18n import _
 from muranopkgcheck import log
 from muranopkgcheck import yaml_loader
 
@@ -195,4 +196,4 @@ def load_package(path, quiet=False):
                 LOG.debug("{} failed to load '{}'"
                           "".format(loader_cls.__name__, path))
     else:
-        raise ValueError("Can not load package: '{}'".format(path))
+        raise ValueError(_('Can not load package: "{}"').format(path))

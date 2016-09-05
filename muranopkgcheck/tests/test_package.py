@@ -29,12 +29,12 @@ class PackageValidatorTests(helpers.BaseValidatorTestClass):
         self.loaded_package.search_for.return_value = [
             'manifest.yaml', 'LICENSE', 'logo']
         self.g = self.pv.run()
-        self.assertIn('Unknown "logo" in package directory',
+        self.assertIn('Unknown "logo" in the package',
                       next(self.g).message)
 
     def test_known_files_missing_req(self):
         self.loaded_package.search_for.return_value = [
             'manifest.yaml', 'logo.png']
         self.g = self.pv.run()
-        self.assertIn('Missing "LICENSE" in package directory',
+        self.assertIn('Missing "LICENSE" in the package',
                       next(self.g).message)

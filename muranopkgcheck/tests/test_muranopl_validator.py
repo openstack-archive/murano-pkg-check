@@ -67,7 +67,7 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
     def test_import_error(self):
         self.g = self.mpl_validator._valid_import(['aaa.bbb', 'ccc.ddd',
                                                    'fff', 'w_ww#'])
-        self.assertIn('Wrong namespace of import "w_ww#"',
+        self.assertIn('Wrong namespace or FNQ of extended class "w_ww#"',
                       next(self.g).message)
 
     def test_double_underscored_name(self):

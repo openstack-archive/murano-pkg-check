@@ -19,6 +19,7 @@ import re
 import six
 
 from muranopkgcheck import error
+from muranopkgcheck.i18n import _
 from muranopkgcheck import log
 
 LOG = log.getLogger(__name__)
@@ -55,10 +56,10 @@ class BaseValidator(object):
         pass
 
     def _valid_string(self, value):
+
         if not isinstance(value, six.string_types):
-            yield error.report.E040('Value is not a string "{0}"'
-                                    .format(value),
-                                    value)
+            yield error.report.E040(_('Value is not a string "{}"'
+                                      '').format(value), value)
 
     def _check_name(self, name):
         if isinstance(name, six.string_types) and NAME_REGEX.match(name):
@@ -123,7 +124,7 @@ class YamlValidator(BaseValidator):
 
             if len(multi_documents) > 1 and not self._allows_multi:
                 reports_chain.append([
-                    error.report.E005('Multi document is not allowed in {0}'
+                    error.report.E005(_('Multi document is not allowed in {}')
                                       .format(file_._path))])
 
             for ast in multi_documents:
@@ -141,17 +142,18 @@ class YamlValidator(BaseValidator):
                               if value['required']) - set(ast.keys())
                 for m in missing:
                     reports_chain.append([
-                        error.report.E020('Missing required key "{0}"'
+                        error.report.E020(_('Missing required key "{}"')
                                           .format(m), m)])
+
         return itertools.chain(*reports_chain)
 
     def _valid_keywords(self, present, known):
         unknown = set(present) - set(known)
         for u in unknown:
-            yield error.report.E021('Unknown keyword "{0}"'.format(u), u)
+            yield error.report.E021(_('Unknown keyword "{}"').format(u), u)
 
     def _unknown_keyword(self, key, value):
-        yield error.report.W010('Unknown keyword "{0}"'.format(key), key)
+        yield error.report.W010(_('Unknown keyword "{}"').format(key), key)
 
     def _null_checker(self, value):
         pass

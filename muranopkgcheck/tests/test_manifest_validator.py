@@ -97,16 +97,16 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
                 'org.openstack.Instance': 'Instance.yaml'}
         self.loaded_package.search_for.return_value = ['FlowClassifier.yaml']
         self.g = self.mv._valid_classes(data)
-        self.assertIn('File is present in Manifest Instance.yaml, but not in '
-                      'filesystem', next(self.g).message)
+        self.assertIn('File "Instance.yaml" is present in Manifest, '
+                      'but not in filesystem', next(self.g).message)
 
     def test_extra_file_in_directory(self):
         data = {'org.openstack.Instance': 'Instance.yaml'}
         self.loaded_package.search_for.return_value = ['FlowClassifier.yaml',
                                                        'Instance.yaml']
         self.g = self.mv._valid_classes(data)
-        self.assertIn('File is not present in Manifest, but it is in '
-                      'filesystem: FlowClassifier.yaml', next(self.g).message)
+        self.assertIn('File "FlowClassifier.yaml" is not present in Manifest, '
+                      'but it is in filesystem', next(self.g).message)
 
     def test_classess_list(self):
         data = [{'org.openstack.Instance': 'Instance.yaml'}]

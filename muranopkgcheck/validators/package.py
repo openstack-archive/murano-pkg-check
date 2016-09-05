@@ -14,6 +14,7 @@
 
 
 from muranopkgcheck import error
+from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
 
 KNOWN_FILES_DIR = frozenset(['manifest.yaml', 'UI', 'LICENSE', 'Classes'])
@@ -35,8 +36,8 @@ class PackageValidator(base.BaseValidator):
         except Exception:
             logo_file = 'logo.png'
         for file_ in files - KNOWN_FILES_DIR - {logo_file}:
-            yield error.report.W120('Unknown "{0}" in package directory'
+            yield error.report.W120(_('Unknown "{}" in the package')
                                     .format(file_), file_)
         for file_ in REQUIRED_FILES_DIR - files:
-            yield error.report.W121('Missing "{0}" in package directory'
+            yield error.report.W121(_('Missing "{}" in the package')
                                     .format(file_), file_)

@@ -22,6 +22,8 @@ import six
 import stevedore
 
 from muranopkgcheck import error
+from muranopkgcheck.i18n import _
+from muranopkgcheck.i18n import _LE
 from muranopkgcheck import log
 from muranopkgcheck import pkg_loader
 from muranopkgcheck.validators import VALIDATORS
@@ -76,17 +78,18 @@ class Manager(object):
                 check_locals = tb.tb_frame.f_locals.copy()
                 check_locals.pop('self', None)
                 if validator_class:
-                    msg = ('Checker {} from {} failed!'
-                           ''.format(check_name,
-                                     validator_class.__class__.__name__))
+                    msg = (_('Checker {} from {} failed!'
+                             '').format(check_name,
+                                        validator_class.__class__.__name__))
                 else:
-                    msg = ('Checker {} failed!'
-                           ''.format(check_name))
+                    msg = (_('Checker {} failed!'
+                             '').format(check_name))
                 LOG.error('{} {}\n{}'.format(msg,
-                                             'Checker locals:',
+                                             _('Checker locals:'),
                                              pprint.pformat(check_locals)),
                           exc_info=exc_info)
-                e = error.report.E000(msg + ' See more information in logs.')
+                e = error.report.E000(
+                    msg + _(' See more information in logs.'))
             if isinstance(e, types.GeneratorType):
                 errors.extend(self._to_list(e, select, ignore))
             else:
@@ -115,7 +118,8 @@ class Manager(object):
 
     @staticmethod
     def failure_hook(_, ep, err):
-        LOG.error('Could not load %r: %s', ep.name, err)
+        LOG.error(_LE('Could not load {plugin}: {error}'
+                      '').format(plugin=ep.name, error=err))
         raise err
 
     def validate(self, validators=None, select=None, ignore=None):

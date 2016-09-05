@@ -19,6 +19,7 @@ import six
 from muranopkgcheck.checkers import code_structure
 from muranopkgcheck.checkers import yaql_checker
 from muranopkgcheck import error
+from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
 
 
@@ -53,16 +54,16 @@ class MuranoPLValidator(base.YamlValidator):
             for imp in import_:
                 yield self._valid_import(imp, False)
         elif not self._check_ns_fqn_name(import_):
-            yield error.report.E025('Wrong namespace of import "{0}"'
-                                    .format(import_), import_)
+            yield error.report.E025(_('Wrong namespace or FNQ of extended '
+                                      'class "{0}"').format(import_), import_)
 
     def _valid_name(self, value):
         if value.startswith('__') or \
            not CLASSNAME_REGEX.match(value):
-            yield error.report.E011('Invalid class name "{0}"'.format(value),
+            yield error.report.E011(_('Invalid class name "{}"').format(value),
                                     value)
         elif not (value != value.lower() and value != value.upper()):
-            yield error.report.W011('Invalid class name "{0}"'.format(value),
+            yield error.report.W011(_('Invalid class name "{}"').format(value),
                                     value)
 
     def _valid_extends(self, value, can_be_list=True):
@@ -71,8 +72,8 @@ class MuranoPLValidator(base.YamlValidator):
                 yield self._valid_extends(cls, False)
         elif isinstance(value, six.string_types):
             if not self._check_ns_fqn_name(value):
-                yield error.report.E025('Wrong FNQ of extended class "{0}"'
-                                        .format(value), value)
+                yield error.report.E025(_('Wrong FNQ of extended class "{}"'
+                                          '').format(value), value)
         else:
             yield error.report.E025("Wrong type of Extends field", value)
 
@@ -99,54 +100,55 @@ class MuranoPLValidator(base.YamlValidator):
         elif isinstance(contract, six.string_types):
             if not self.yaql_checker(contract) or \
                     not contract.startswith('$.') and contract != '$':
-                yield error.report.W048('Contract is not valid yaql "{0}"'
-                                        .format(contract), contract)
+                yield error.report.W048(_('Contract is not valid yaql "{}"'
+                                          '').format(contract), contract)
         else:
-            yield error.report.W048('Contract is not valid yaql "{0}"'
-                                    .format(contract), contract)
+            yield error.report.W048(_('Contract is not valid yaql "{}"'
+                                      '').format(contract), contract)
 
     def _valid_properties(self, properties):
         if not isinstance(properties, dict):
-            yield error.report.E026('Properties should be a dict', properties)
+            yield error.report.E026(_('Properties should be a dict'),
+                                    properties)
             return
         for property_name, property_data in six.iteritems(properties):
             usage = property_data.get('Usage')
             if usage:
                 if usage not in PROPERTIES_USAGE_VALUES:
-                    yield error.report.E042('Not allowed usage '
-                                            '"{0}"'.format(usage),
-                                            usage)
+                    yield error.report.E042(_('Not allowed usage "{}"'
+                                              '').format(usage), usage)
             contract = property_data.get('Contract')
             if contract is not None:
                 yield self._valid_contract(contract)
             else:
-                yield error.report.E047('Missing Contract in property "{0}"'
+                yield error.report.E047(_('Missing Contract in property "{}"')
                                         .format(property_name), property_name)
             yield self._valid_keywords(property_data.keys(),
                                        PROPERTIES_KEYWORDS)
 
     def _valid_namespaces(self, value):
         if not isinstance(value, dict):
-            yield error.report.E044('Wrong type of namespace', value)
+            yield error.report.E044(_('Wrong type of namespace'), value)
             return
 
         for name, fqn in six.iteritems(value):
             if not self._check_fqn_name(fqn):
-                yield error.report.E060('Wrong namespace fqn "{0}"'
-                                        .format(fqn), fqn)
+                yield error.report.E060(_('Wrong namespace fqn '
+                                          '"{}"').format(fqn), fqn)
             if not self._check_name(name) and name != '=':
-                yield error.report.E060('Wrong name for namespace '
-                                        '"{0}"'.format(fqn), fqn)
+                yield error.report.E060(_('Wrong name for namespace '
+                                          '"{}"').format(fqn), fqn)
 
     def _valid_methods(self, value):
         for method_name, method_data in six.iteritems(value):
             if not isinstance(method_data, dict):
                 if method_data:
-                    yield error.report.E046('Method is not a dict',
+                    yield error.report.E046(_('Method is not a dict'),
                                             method_name)
                 return
+
             if not METHOD_NAME_REGEX.match(method_name):
-                yield error.report.E054('Invalid name of method "{0}"'
+                yield error.report.E054(_('Invalid name of method "{}"')
                                         .format(method_name), method_name)
             scope = method_data.get('Scope')
             if scope:
@@ -164,46 +166,46 @@ class MuranoPLValidator(base.YamlValidator):
 
     def _valid_body(self, body):
         if not isinstance(body, (list, six.string_types, dict)):
-            yield error.report.E045('Body is not a list or scalar/yaql '
-                                    'expression', body)
+            yield error.report.E045(_('Body is not a list or scalar/yaql '
+                                    'expression'), body)
         else:
             yield self.code_structure.codeblock(body)
 
     def _valid_scope(self, scope):
         if self._loaded_pkg.format_version >= '1.4':
             if scope is not None and scope not in ('Public', 'Session'):
-                yield error.report.E044('Wrong Scope "{0}"'.format(scope),
+                yield error.report.E044(_('Wrong Scope "{}"').format(scope),
                                         scope)
         else:
-            yield error.report.E044('Scope is not supported version '
-                                    'earlier than 1.3"', scope)
+            yield error.report.E044(_('Scope is not supported version '
+                                    'earlier than 1.3"'), scope)
 
     def _valid_method_usage(self, usage):
         if usage == 'Action':
             if self._loaded_pkg.format_version >= '1.4':
-                yield error.report.W045('Usage "{0}" is deprecated since 1.4'
-                                        .format(usage), usage)
+                yield error.report.W045(_('Usage "{}" is deprecated since 1.4'
+                                          '').format(usage), usage)
         elif usage in frozenset(['Static', 'Extension']):
             if self._loaded_pkg.format_version <= '1.3':
-                yield error.report.W045('Usage "{0}" is available from 1.3'
+                yield error.report.W045(_('Usage "{}" is available from 1.3')
                                         .format(usage), usage)
         elif usage != 'Runtime':
-            yield error.report.W045('Unsupported usage type "{0}" '
+            yield error.report.W045(_('Unsupported usage type "{}" ')
                                     .format(usage), usage)
 
     def _valid_arguments(self, arguments):
         if not isinstance(arguments, list):
-            yield error.report.E046('Methods arguments should be a list',
+            yield error.report.E046(_('Methods arguments should be a list'),
                                     arguments)
             return
         for argument in arguments:
             if not isinstance(argument, dict) or len(argument) != 1:
-                yield error.report.E046('Methods single argument should be a '
-                                        'one key dict', argument)
+                yield error.report.E046(_('Methods single argument should be '
+                                          'a one key dict'), argument)
             else:
                 name = next(six.iterkeys(argument))
                 if not self._check_name(name):
-                    yield error.report.E054('Invalid name of argument "{0}"'
+                    yield error.report.E054(_('Invalid name of argument "{}"')
                                             .format(name), name)
                 val = next(six.itervalues(argument))
                 contract = val.get('Contract')
@@ -216,8 +218,8 @@ class MuranoPLValidator(base.YamlValidator):
 
     def _valid_argument_usage(self, usage):
         if self._loaded_pkg.format_version < '1.4':
-            yield error.report.E052('Arguments usage is available since 1.4 ',
-                                    usage)
+            yield error.report.E052(_('Arguments usage is available '
+                                      'since 1.4'), usage)
         if usage not in frozenset(['Standard', 'VarArgs', 'KwArgs']):
-            yield error.report.E053('Usage is invalid value "{0}"'
+            yield error.report.E053(_('Usage is invalid value "{}"')
                                     .format(usage), usage)

@@ -19,6 +19,7 @@ import semantic_version
 import six
 
 from muranopkgcheck import error
+from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
 from muranopkgcheck import yaml_loader
 
@@ -51,44 +52,44 @@ class ManifestValidator(base.YamlValidator):
         format_ = str(value).split('/', 1)
         if len(format_) > 1:
             if format_[0] != 'MuranoPL':
-                yield error.report.W030('Not supported format "{0}"'
-                                        .format(value), value)
+                yield error.report.W030(_('Not supported format "{}"'
+                                          '').format(value), value)
                 return
         ver = format_[-1]
         if str(ver) not in ['1.0', '1.1', '1.2', '1.3', '1.4']:
-            yield error.report.W030('Not supported format version "{0}"'
-                                    .format(value), value)
+            yield error.report.W030(_('Not supported format version "{}"'
+                                      '').format(value), value)
 
     def _valid_fullname(self, fullname):
         if not self._check_fqn_name(fullname):
-            yield error.report.E073('Invalid FullName "{0}"'
+            yield error.report.E073(_('Invalid FullName "{}"')
                                     .format(fullname), fullname)
 
     def _valid_tags(self, value):
         if not isinstance(value, list):
-            yield error.report.E070('Tags should be a list', value)
+            yield error.report.E070(_('Tags should be a list'), value)
 
     def _valid_require(self, value):
         if not isinstance(value, dict):
-            yield error.report.E005('Require is not a dict type', value)
+            yield error.report.E005(_('Require is not a dict type'), value)
             return
         for fqn, ver in six.iteritems(value):
             if not self._check_fqn_name(fqn):
-                yield error.report.E005('Require key is not valid FQN "{0}"'
-                                        .format(fqn), fqn)
+                yield error.report.E005(_('Require key is not valid FQN "{}"'
+                                          '').format(fqn), fqn)
 
     def _valid_type(self, value):
         if value not in ('Application', 'Library'):
-            yield error.report.E071('Type is invalid "{0}"'.format(value),
+            yield error.report.E071(_('Type is invalid "{}"').format(value),
                                     value)
 
     def _valid_version(self, version):
         try:
             semantic_version.Version.coerce(str(version))
         except ValueError:
-            yield error.report.E071('Version format should be compatible with '
-                                    'SemVer not "{0}"'.format(version),
-                                    version)
+            yield error.report.E071(_('Version format should be compatible '
+                                      'with SemVer not "{}"'
+                                      '').format(version), version)
 
     def _valid_logo_ui_existance(self, ast):
         if 'Logo' not in ast:
@@ -99,33 +100,33 @@ class ManifestValidator(base.YamlValidator):
     def _valid_ui(self, value):
         if isinstance(value, six.string_types):
             if not self._loaded_pkg.exists(os.path.join('UI', value)):
-                yield error.report.W073('There is no UI file "{0}"'
-                                        .format(value), value)
+                yield error.report.W073(_('There is no UI file "{}"'
+                                          '').format(value), value)
         else:
-            yield error.report.E072('UI is not a string', value)
+            yield error.report.E072(_('UI is not a string'), value)
 
     def _valid_logo(self, value):
         if isinstance(value, six.string_types):
             if not self._loaded_pkg.exists(value):
-                yield error.report.W074('There is no Logo file "{0}"'
-                                        .format(value), value)
+                yield error.report.W074(_('There is no Logo file "{}"'
+                                          '').format(value), value)
         else:
-            yield error.report.E074('Logo is not a string', value)
+            yield error.report.E074(_('Logo is not a string'), value)
 
     def _valid_classes(self, value):
         if not isinstance(value, dict):
-            yield error.report.E074('Classes section should be a dict', value)
+            yield error.report.E074(_('Classes section should be a dict'),
+                                    value)
             return
 
         files = set(value.values())
         existing_files = set(self._loaded_pkg.search_for('.*',
                                                          'Classes'))
         for fname in files - existing_files:
-            yield error.report.E050('File is present in Manifest {fname}, '
-                                    'but not in filesystem'
-                                    .format(fname=fname),
-                                    fname)
+            yield error.report.E050(_('File "{}" is present in Manifest, '
+                                      'but not in filesystem'
+                                      '').format(fname), fname)
         for fname in existing_files - files:
-            yield error.report.W020('File is not present in Manifest, but '
-                                    'it is in filesystem: {fname}'
-                                    .format(fname=fname), fname)
+            yield error.report.W020(_('File "{}" is not present in Manifest, '
+                                      'but it is in filesystem'
+                                      '').format(fname), fname)
