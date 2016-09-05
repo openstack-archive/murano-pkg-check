@@ -32,6 +32,22 @@ PROPERTIES_USAGE_VALUES = frozenset(['In', 'Out', 'InOut', 'Const', 'Static',
 CLASSNAME_REGEX = re.compile('^[A-Za-z_]\w*$')
 METHOD_NAME_REGEX = re.compile('^[A-Za-z_\.][\w]*$')
 
+error.register.E011(description='Invalid class name')
+error.register.E025(description='Wrong namespace or FNQ of extended class')
+error.register.E026(description='Properties should be a dict')
+error.register.E042(description='Not allowed usage')
+error.register.E044(description='Wrong type of namespace')
+error.register.E045(description='Body is not a list or scalar/yaql expression')
+error.register.E046(description='Method is not a dict')
+error.register.E047(description='Missing Contract in property')
+error.register.E052(description='Arguments usage is available since 1.4')
+error.register.E053(description='Usage is invalid value ')
+error.register.E054(description='Invalid name of method "{}"')
+error.register.E060(description='Wrong namespace fqn')
+error.register.W045(description='Unsupported usage type')
+error.register.W011(description='Invalid class name')
+error.register.W048(description='Contract is not valid yaql')
+
 
 class MuranoPLValidator(base.YamlValidator):
     def __init__(self, loaded_package):

@@ -20,6 +20,9 @@ from muranopkgcheck.validators import base
 KNOWN_FILES_DIR = frozenset(['manifest.yaml', 'UI', 'LICENSE', 'Classes'])
 REQUIRED_FILES_DIR = frozenset(['manifest.yaml', 'LICENSE'])
 
+error.register.W120(description='Unknown file in the package')
+error.register.W121(description='Missing file in the package')
+
 
 class PackageValidator(base.BaseValidator):
     def __init__(self, loaded_package):

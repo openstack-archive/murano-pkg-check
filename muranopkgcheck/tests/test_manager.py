@@ -42,9 +42,8 @@ class PlainTextFormatterTest(base.TestCase):
 
         formatter = manager.PlainTextFormatter()
         fake_yaml_node = FakeYamlNode('Fake!!!')
-
-        errors = [error.report.E007('Fake!!!', fake_yaml_node)]
-        self.assertEqual('fake:1:1: E007 Fake!!!', formatter.format(errors))
+        errors = [error.report.E042('Fake!!!', fake_yaml_node)]
+        self.assertEqual('fake:1:1: E042 Fake!!!', formatter.format(errors))
 
 
 class ManagerTest(base.TestCase):

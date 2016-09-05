@@ -12,6 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from muranopkgcheck.i18n import _LE
+
+errors = dict()
+
 
 class CheckError(Exception):
 
@@ -35,26 +39,46 @@ class CheckError(Exception):
         return 'CheckError({0})'.format(self.message)
 
 
-def error(code, message, filename=None, line=0, column=0, source=None):
-    return CheckError(code=code, message=message, filename=filename,
-                      line=line, column=column, source=source)
-
-
-def _report(code):
-    def _report_(message, yaml_obj=None, filename=None):
-        meta = getattr(yaml_obj, '__yaml_meta__', None)
-        kwargs = {}
-        if meta is not None:
-            kwargs['line'] = meta.line + 1
-            kwargs['column'] = meta.column + 1
-            kwargs['source'] = meta.get_snippet()
-            kwargs['filename'] = filename or meta.name
-        return CheckError(code=code, message=message, **kwargs)
-    return _report_
-
-
 class Report(object):
-    def __getattr__(self, name):
-        return _report(name)
 
-report = Report()
+    def __init__(self, errors, prefix=None):
+        self.prefix = prefix
+        self.errors = errors
+
+    def __getattr__(self, code):
+        code = ':'.join((self.prefix, code)) if self.prefix else code
+
+        def _report(message, yaml_obj=None, filename=None):
+            meta = getattr(yaml_obj, '__yaml_meta__', None)
+            kwargs = {}
+            if meta is not None:
+                kwargs['line'] = meta.line + 1
+                kwargs['column'] = meta.column + 1
+                kwargs['source'] = meta.get_snippet()
+                kwargs['filename'] = filename or meta.name
+            return CheckError(code=code, message=message, **kwargs)
+        if code not in self.errors:
+            raise ValueError(_LE('Error {} was not registered').format(code))
+        return _report
+
+
+class Register(object):
+
+    def __init__(self, errors, prefix=None):
+        self.prefix = prefix
+        self.errors = errors
+
+    def __getattr__(self, code):
+        code = ':'.join((self.prefix, code)) if self.prefix else code
+        if code in self.errors:
+            raise ValueError(_LE('Error {} is already registered')
+                             .format(code))
+
+        def _register(**kwargs):
+            props = kwargs.copy()
+            props['code'] = code
+            self.errors[code] = props
+        return _register
+
+report = Report(errors)
+register = Register(errors)

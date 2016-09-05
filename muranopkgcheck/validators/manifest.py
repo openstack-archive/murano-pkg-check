@@ -23,6 +23,20 @@ from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
 from muranopkgcheck import yaml_loader
 
+error.register.E030(description='Not supported format')
+error.register.E050(description='File is present in Manifest, '
+                                'but not in filesystem')
+error.register.E070(description='Tags should be a list')
+error.register.E071(description='Type is invalid')
+error.register.E072(description='UI is not a string')
+error.register.E073(description='Invalid FullName')
+error.register.E074(description='Logo is not a string')
+error.register.W020(description='File is not present in Manifest, '
+                                'but it is in filesystem')
+error.register.W030(description='Not supported format version')
+error.register.W073(description='There is no UI file')
+error.register.W074(description='There is no Logo file')
+
 
 class ManifestValidator(base.YamlValidator):
     def __init__(self, loaded_package):

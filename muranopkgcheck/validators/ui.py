@@ -23,6 +23,13 @@ FIELDS_TYPE = frozenset(['string', 'boolean', 'text', 'integer', 'password',
                          'table', 'flavor', 'keypair', 'image', 'azone',
                          'psqlDatabase', 'network'])
 
+error.register.E081(description='Value should be boolean')
+error.register.E083(description='Wrong name in UI file')
+error.register.E084(description='Application is not a dict')
+error.register.E100(description='Not valid FQN or known type')
+error.register.W082(description='Incorrect version of UI file')
+error.register.W100(description='Not known type. Probably typo')
+
 
 class UiValidator(base.YamlValidator):
     def __init__(self, loaded_package):
@@ -81,8 +88,8 @@ class UiValidator(base.YamlValidator):
                 yield self._valid_field_type(elem, False)
         elif self._check_fqn_name(fqn):
             if '.' not in fqn and fqn not in FIELDS_TYPE:
-                yield error.report.W100('"{0}" is not know type probably typo'
-                                        .format(fqn), fqn)
+                yield error.report.W100('"{0}" is not known type. '
+                                        'Probably a typo'.format(fqn), fqn)
         else:
             yield error.report.E100('"{0}" is not valid FQN or known type'
                                     .format(fqn), fqn)

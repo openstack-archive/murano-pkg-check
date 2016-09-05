@@ -43,6 +43,12 @@ def format_support(since=None, till=None):
         return func
     return _func
 
+error.register.E005(description='YAML multi document is not allowed')
+error.register.E020(description='Missing required key')
+error.register.E021(description='Unknown keyword')
+error.register.E040(description='Value should be string')
+error.register.W010(description='Unknown keyword')
+
 
 @six.add_metaclass(abc.ABCMeta)
 class BaseValidator(object):

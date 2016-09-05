@@ -25,6 +25,13 @@ ASSIGMENT_KEY = re.compile('^\$.?[\w]')
 def check_req(check, required=True):
     return locals()
 
+error.register.E203(description='Value should be string type')
+error.register.E200(description='No value should be here')
+error.register.E202(description='Not a valid yaql expression')
+error.register.W202(description='Not a valid yaql expression')
+error.register.E201(description='Not a valid variable name')
+
+
 CODE_STRUCTURE = {
     'Try': {
         'keywords': {
