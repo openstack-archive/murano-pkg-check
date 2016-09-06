@@ -13,6 +13,7 @@
 #    under the License.
 
 import re
+
 import six
 
 from muranopkgcheck.checkers import code_structure
@@ -28,6 +29,7 @@ PROPERTIES_KEYWORDS = frozenset(['Contract', 'Usage', 'Default', 'Meta'])
 PROPERTIES_USAGE_VALUES = frozenset(['In', 'Out', 'InOut', 'Const', 'Static',
                                      'Runtime', 'Config'])
 CLASSNAME_REGEX = re.compile('^[A-Za-z_]\w*$')
+METHOD_NAME_REGEX = re.compile('^[A-Za-z_\.][\w]*$')
 
 
 class MuranoPLValidator(base.YamlValidator):
@@ -143,7 +145,7 @@ class MuranoPLValidator(base.YamlValidator):
                     yield error.report.E046('Method is not a dict',
                                             method_name)
                 return
-            if not self._check_name(method_name):
+            if not METHOD_NAME_REGEX.match(method_name):
                 yield error.report.E054('Invalid name of method "{0}"'
                                         .format(method_name), method_name)
             scope = method_data.get('Scope')

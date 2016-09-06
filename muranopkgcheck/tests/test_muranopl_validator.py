@@ -248,6 +248,10 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         self.assertIn('Body is not a list or scalar/yaql expression',
                       next(self.g).message)
 
+    def test_dot_function(self):
+        m_dict = {'.init': {}}
+        self.g = self.mpl_validator._valid_methods(m_dict)
+
     def test_method_is_a_list(self):
         m_dict = deepcopy(MURANOPL_BASE['Methods'])
         m_dict['foo'] = [1, 2]
