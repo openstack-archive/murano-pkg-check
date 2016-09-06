@@ -17,6 +17,7 @@ import mock
 
 from muranopkgcheck.tests import test_validator_helpers as helpers
 from muranopkgcheck.validators import manifest
+from muranopkgcheck import yaml_loader
 
 
 class ManifestValidatorTests(helpers.BaseValidatorTestClass):
@@ -30,6 +31,17 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
 
     def test_format_as_number(self):
         self.g = self.mv._valid_format(1.3)
+
+    def test_description(self):
+        self.g = self.mv._valid_description(yaml_loader.YamlNull())
+
+    def test_description_string(self):
+        self.g = self.mv._valid_description("lalal")
+
+    def test_description_number(self):
+        self.g = self.mv._valid_description(1.3)
+        self.assertIn('Value is not valid string "1.3"',
+                      next(self.g).message)
 
     def test_wrong_format(self):
         self.g = self.mv._valid_format('0.9')
