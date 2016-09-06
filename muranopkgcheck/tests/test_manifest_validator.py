@@ -132,3 +132,8 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
     def test_tags(self):
         self.g = self.mv._valid_tags('whatever')
         self.assertIn('Tags should be a list', next(self.g).message)
+
+    def test_fullname(self):
+        self.g = self.mv._valid_fullname('invalid.fullname.!@#@')
+        self.assertIn('Invalid FullName "invalid.fullname.!@#@"',
+                      next(self.g).message)

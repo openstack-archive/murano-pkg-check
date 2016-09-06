@@ -30,8 +30,8 @@ CODE_STRUCTURE = {
         'keywords': {
             'Try': check_req('codeblock'),
             'Catch': check_req('empty'),
-            'With': check_req('string'),
-            'As': check_req('string'),
+            'With': check_req('string', False),
+            'As': check_req('string', False),
             'Do': check_req('codeblock'),
             'Else': check_req('codeblock', False),
             'Finally': check_req('codeblock', False)}},
@@ -117,7 +117,9 @@ class CheckCodeStructure(object):
 
     def yaql(self, value):
         if not self._yaql_checker(value):
-            yield error.report.E202('Not a valid yaql expression '
+            if isinstance(value, bool):
+                return
+            yield error.report.W202('Not a valid yaql expression '
                                     '"{0}"'.format(value), value)
 
     def codeblock(self, codeblocks):

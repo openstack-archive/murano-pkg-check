@@ -130,7 +130,15 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
         self.g = self._checker.codeblock(MULTILINE_BODY)
         self.assertIn('Not valid variable name "www"', next(self.g).message)
 
-    def test_not_string(self):
+    def test_minimal_try_block(self):
+        MULTILINE_BODY = [
+            {'Try': [
+                '$port.deploy()'],
+             'Catch': '',
+             'Do': ['$.string()']}]
+        self.g = self._checker.codeblock(MULTILINE_BODY)
+
+    def test_try_not_string(self):
         MULTILINE_BODY = [
             {'Try': [
                 '$port.deploy()'],
@@ -142,6 +150,9 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
         self.g = self._checker.codeblock(MULTILINE_BODY)
         self.assertIn('Value should be string type "213"',
                       next(self.g).message)
+
+    def test_yaql_accept_bool(self):
+        self.g = self._checker.yaql(True)
 
     def test_not_empty(self):
         MULTILINE_BODY = [
