@@ -105,9 +105,6 @@ class YamlValidator(BaseValidator):
 
     def _run_single(self, file_):
         reports_chain = []
-        multi_documents = file_.yaml()
-        if multi_documents is None:
-            multi_documents = [{}]
 
         def run_helper(name, checkers, data):
             for checker in checkers:
@@ -115,26 +112,37 @@ class YamlValidator(BaseValidator):
                 if result:
                     reports_chain.append(result)
 
-        if len(multi_documents) > 1 and not self._allows_multi:
-            reports_chain.append(
-                error.report.E005('Multi document is not allowed in {0}'
-                                  .format(file_._path)))
+        try:
+            multi_documents = file_.yaml()
+        except Exception as e:
+            reports_chain.append([
+                error.report.E002('Yaml Error: {0}'.format(e), e)])
+        else:
+            if multi_documents is None:
+                multi_documents = [{}]
 
-        for ast in multi_documents:
-            file_check = self._checkers.get(None)
-            if file_check:
-                run_helper(None, file_check['checkers'], ast)
-            for key, value in six.iteritems(ast):
-                checkers = self._checkers.get(key)
-                if checkers:
-                    run_helper(key, checkers['checkers'], ast[key])
-                else:
-                    reports_chain.append(self._unknown_keyword(key, value))
-            missing = set(key for key, value in six.iteritems(self._checkers)
-                          if value['required']) - set(ast.keys())
-            for m in missing:
-                reports_chain.append([error.report.E020('Missing required key '
-                                     '"{0}"'.format(m), m)])
+            if len(multi_documents) > 1 and not self._allows_multi:
+                reports_chain.append([
+                    error.report.E005('Multi document is not allowed in {0}'
+                                      .format(file_._path))])
+
+            for ast in multi_documents:
+                file_check = self._checkers.get(None)
+                if file_check:
+                    run_helper(None, file_check['checkers'], ast)
+                for key, value in six.iteritems(ast):
+                    checkers = self._checkers.get(key)
+                    if checkers:
+                        run_helper(key, checkers['checkers'], ast[key])
+                    else:
+                        reports_chain.append(self._unknown_keyword(key, value))
+                missing = set(key for key, value in
+                              six.iteritems(self._checkers)
+                              if value['required']) - set(ast.keys())
+                for m in missing:
+                    reports_chain.append([
+                        error.report.E020('Missing required key "{0}"'
+                                          .format(m), m)])
         return itertools.chain(*reports_chain)
 
     def _valid_keywords(self, present, known):
