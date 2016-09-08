@@ -1,0 +1,51 @@
+- case_no_errors
+-
+  pkg:
+    manifest.yaml:
+      format: yaml
+      content:
+        Type: Library
+        FullName: org.Test
+        Description: Very important package
+        Name: Test
+        Classes:
+          org.Test: Test.yaml
+    LICENSE:
+      format: raw
+      content: LICENSE
+    logo.png:
+      format: raw
+      content: logo
+    Classes/Test.yaml:
+      format: yaml
+      content:
+        Namespaces:
+          =: org.Test
+        Name: Test
+  expected: []
+---
+- case_no_files
+-
+  pkg:
+    manifest.yaml:
+      format: yaml
+      content:
+        Type: Application
+        FullName: org.Test
+        Description: Very important package
+        Name: Test
+        Classes:
+          org.Test: Test.yaml
+  expected:
+    -
+      code: E050
+      msg: File "Test.yaml" is present in Manifest, but not in filesystem
+    -
+      code: W073
+      msg: There is no UI file "ui.yaml"
+    -
+      code: W074
+      msg: There is no Logo file "logo.png"
+    -
+      code: W121
+      msg: Missing "LICENSE" in the package

@@ -26,9 +26,10 @@ class ManifestValidatorTests(helpers.BaseValidatorTestClass):
         self._oe_patcher = mock.patch('os.path.exists')
         self.exists = self._oe_patcher.start()
         self.exists.return_value = [True, True]
-        self.loaded_package = mock.Mock()
-        self.loaded_package.read.return_value.yaml.return_value = [
-            {'Type': 'Application'}]
+        self.loaded_package = mock.MagicMock()
+        # self.loaded_package = mock.Mock()
+        # self.loaded_package.read.return_value.yaml.return_value = [
+        #     {'Type': 'Application'}]
         self.mv = manifest.ManifestValidator(self.loaded_package)
 
     def test_format_as_number(self):

@@ -30,6 +30,8 @@ from muranopkgcheck.validators import VALIDATORS
 
 LOG = log.getLogger(__name__)
 
+error.register.E000(description='Check failed')
+
 
 @six.add_metaclass(abc.ABCMeta)
 class Formatter(object):
@@ -56,8 +58,11 @@ class PlainTextFormatter(Formatter):
 
 class Manager(object):
 
-    def __init__(self, pkg_path, quiet_load=False):
-        self.pkg = pkg_loader.load_package(pkg_path, quiet=quiet_load)
+    def __init__(self, pkg_path, quiet_load=False, loader=None):
+        if loader:
+            self.pkg = loader(pkg_path)
+        else:
+            self.pkg = pkg_loader.load_package(pkg_path, quiet=quiet_load)
         self.validators = list(VALIDATORS)
         self.plugins = None
 
