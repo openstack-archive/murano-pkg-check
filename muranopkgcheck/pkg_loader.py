@@ -70,7 +70,17 @@ class BaseLoader(object):
     def try_load(cls, path):
         loader = cls._try_load(path)
         if loader is not None and loader.exists(consts.MANIFEST_PATH):
-            loader.try_set_format()
+            try:
+                manifest = loader.read(consts.MANIFEST_PATH).yaml()[0]
+                if 'FullName' not in manifest:
+                    LOG.warning('Package does not look like Murano package',
+                                exc_info=sys.exc_info())
+                    return
+                loader.try_set_format(manifest)
+            except yaml.YAMLError:
+                LOG.warning('Unable to parse Manifest yaml',
+                            exc_info=sys.exc_info())
+                return
             return loader
 
     @abc.abstractmethod
@@ -95,21 +105,14 @@ class BaseLoader(object):
         self._cached_files[path] = FileWrapper(self, path)
         return self._cached_files[path]
 
-    def try_set_format(self):
-        if self.exists(consts.MANIFEST_PATH):
-            try:
-                manifest = self.read(consts.MANIFEST_PATH).yaml()
-            except yaml.YAMLError:
-                LOG.warning('Unable to parse Manifest yaml',
-                            exc_info=sys.exc_info())
+    def try_set_format(self, manifest):
+        if manifest and 'Format' in manifest:
+            if '/' in six.text_type(manifest['Format']):
+                fmt, version = manifest['Format'].split('/', 1)
+                self.format = fmt
+                self.format_version = version
             else:
-                if manifest and 'Format' in manifest:
-                    if '/' in six.text_type(manifest['Format']):
-                        fmt, version = manifest['Format'].split('/', 1)
-                        self.format = fmt
-                        self.format_version = version
-                    else:
-                        self.format_version = six.text_type(manifest['Format'])
+                self.format_version = six.text_type(manifest['Format'])
 
 
 class DirectoryLoader(BaseLoader):

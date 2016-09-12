@@ -32,7 +32,7 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
             '$a': '$.deploy()',
             '$b': '$.string()'}]
         self.g = self._checker.codeblock(SIMPLE_BODY)
-        self.assertIn('Wrong code structure/assigment probably typo',
+        self.assertIn('Wrong code structure/assigment. Probably a typo',
                       next(self.g).message)
 
     def test_multiline(self):
@@ -50,7 +50,7 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
             '$.call($res)',
         ]
         self.g = self._checker.codeblock(MULTILINE_BODY)
-        self.assertIn('Not valid variable name "1"', next(self.g).message)
+        self.assertIn('"1" is not valid variable name', next(self.g).message)
 
     def test_bad_assigment_with_double_dollar(self):
         MULTILINE_BODY = [
@@ -59,7 +59,7 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
             '$.call($res)',
         ]
         self.g = self._checker.codeblock(MULTILINE_BODY)
-        self.assertIn('Not valid variable name "$$"', next(self.g).message)
+        self.assertIn('"$$" is not valid variable name', next(self.g).message)
 
     def test_bad_assigment_case2(self):
         MULTILINE_BODY = [
@@ -69,7 +69,7 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
         ]
         self.g = self._checker.codeblock(MULTILINE_BODY)
         p = next(self.g)
-        self.assertIn('Not valid variable name "res"', p.message)
+        self.assertIn('"res" is not valid variable name', p.message)
 
     def test_if(self):
         MULTILINE_BODY = [
@@ -128,27 +128,26 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
                           '$.b()']}}
         ]
         self.g = self._checker.codeblock(MULTILINE_BODY)
-        self.assertIn('Not valid variable name "www"', next(self.g).message)
+        self.assertIn('"www" is not valid variable name',
+                      next(self.g).message)
 
     def test_minimal_try_block(self):
         MULTILINE_BODY = [
             {'Try': [
                 '$port.deploy()'],
-             'Catch': '',
-             'Do': ['$.string()']}]
+             'Catch': {}}]
         self.g = self._checker.codeblock(MULTILINE_BODY)
 
     def test_try_not_string(self):
         MULTILINE_BODY = [
-            {'Try': [
-                '$port.deploy()'],
-                'Catch': '',
-                'With': 213,
-                'As': 'what',
-                'Do': [
-                    '$.string()']}]
+            {'Try': ['$port.deploy()'],
+             'Catch': {
+                'With': 'exceptionName',
+                'As': 213,
+                'Do': ['$.string()']}}
+        ]
         self.g = self._checker.codeblock(MULTILINE_BODY)
-        self.assertIn('Value should be string type "213"',
+        self.assertIn('Value of "213" should be a string',
                       next(self.g).message)
 
     def test_yaql_accept_bool(self):
@@ -162,5 +161,5 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
             {'Break': 'a'},
         ]
         self.g = self._checker.codeblock(MULTILINE_BODY)
-        self.assertIn('There should be no value here "a"',
+        self.assertIn('Statement should be empty, not a "a"',
                       next(self.g).message)

@@ -17,7 +17,8 @@ from muranopkgcheck import error
 from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
 
-KNOWN_FILES_DIR = frozenset(['manifest.yaml', 'UI', 'LICENSE', 'Classes'])
+KNOWN_FILES_DIR = frozenset(['manifest.yaml', 'UI', 'LICENSE', 'Classes',
+                             'images.lst', 'README.rst'])
 REQUIRED_FILES_DIR = frozenset(['manifest.yaml', 'LICENSE'])
 
 error.register.W120(description='Unknown file in the package')
@@ -32,7 +33,7 @@ class PackageValidator(base.BaseValidator):
         yield self._known_directories()
 
     def _known_directories(self):
-        files = set(self._loaded_pkg.search_for('^\w+$'))
+        files = set(self._loaded_pkg.search_for('^[^/]+$'))
         try:
             logo_file = next(self._loaded_pkg.search_for('^manifest.yaml$'))\
                 .yaml()[0]['Logo']

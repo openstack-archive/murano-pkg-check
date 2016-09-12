@@ -128,7 +128,7 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         m_dict = deepcopy(MURANOPL_BASE['Methods'])
         m_dict['foo']['Body'] = '$.deploy('
         self.g = self.mpl_validator._valid_methods(m_dict)
-        self.assertIn('Not a valid yaql expression "$.deploy("',
+        self.assertIn('"$.deploy(" is not valid yaql expression',
                       next(self.g).message)
 
     def test_method_body_is_return(self):
@@ -141,7 +141,7 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         m_dict['foo']['Body'][0]['In'] =\
             '$.deploy('
         self.g = self.mpl_validator._valid_methods(m_dict)
-        self.assertIn('Not a valid yaql expression "$.deploy("',
+        self.assertIn('"$.deploy(" is not valid yaql expression',
                       next(self.g).message)
 
     def test_error_in_method_for_loop_body(self):
@@ -149,7 +149,7 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         m_dict['foo']['Body'][0]['Do'][1] =\
             '$.deploy('
         self.g = self.mpl_validator._valid_methods(m_dict)
-        self.assertIn('Not a valid yaql expression "$.deploy("',
+        self.assertIn('"$.deploy(" is not valid yaql expression',
                       next(self.g).message)
 
     def test_missing_contract_in_properties(self):
@@ -334,10 +334,18 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         self.assertIn('Usage "Static" is available from 1.3',
                       next(self.g).message)
 
-    def test_method_arguments_are_dict(self):
-        self.g = self.mpl_validator._valid_arguments({'a': 'b'})
-        self.assertIn('Methods arguments should be a list',
+    def test_method_arguments_invalid(self):
+        self.g = self.mpl_validator._valid_arguments('foobar')
+        self.assertIn('Methods arguments should be a list or dict',
                       next(self.g).message)
+
+    def test_method_arguments_are_dict(self):
+        self.g = self.mpl_validator._valid_arguments({'a': {'Contract': '$'}})
+
+    def test_method_arguments_are_dict_two_keys(self):
+        self.g = self.mpl_validator._valid_arguments({'a': 'b', 'c': 'd'})
+        self.assertIn('It is not safe to define methods arguments as a dict '
+                      'with several keys', next(self.g).message)
 
     def test_method_arguments_element_is_two_key(self):
         arguments = [

@@ -26,23 +26,6 @@ LOG = log.getLogger(__name__)
 FQN_REGEX = re.compile('^([a-zA-Z_$][\w$]*\.)*[a-zA-Z_$][\w$]*$')
 NAME_REGEX = re.compile('^[A-Za-z_][\w]*$')
 
-
-def check_version(method, version):
-    since = method._mpl_since
-    till = method._mpl_till
-    if (not since or version >= since) and\
-       (not till or version <= till):
-        return True
-    return False
-
-
-def format_support(since=None, till=None):
-    def _func(func):
-        func._mpl_since = since
-        func._mpl_till = till
-        return func
-    return _func
-
 error.register.E005(description='YAML multi document is not allowed')
 error.register.E020(description='Missing required key')
 error.register.E021(description='Unknown keyword')
@@ -62,7 +45,6 @@ class BaseValidator(object):
         pass
 
     def _valid_string(self, value):
-
         if not isinstance(value, six.string_types):
             yield error.report.E040(_('Value is not a string "{}"'
                                       '').format(value), value)

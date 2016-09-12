@@ -15,13 +15,18 @@
 import six
 
 from muranopkgcheck import error
+from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
 
-UI_VERSION = frozenset(['1.0', '1', '2', '2.0', '2.1', '2.2', '2.3'])
-FIELDS_TYPE = frozenset(['string', 'boolean', 'text', 'integer', 'password',
+UI_VERSION = frozenset(('1.0', '1', '2', '2.0', '2.1', '2.2', '2.3'))
+FIELDS_TYPE = frozenset(('string', 'boolean', 'text', 'integer', 'password',
                          'clusterip', 'floatingip', 'domain', 'databaselist',
                          'table', 'flavor', 'keypair', 'image', 'azone',
-                         'psqlDatabase', 'network'])
+                         'psqlDatabase', 'network', 'choice'))
+BOOL_FIELDS = frozenset(('required', 'hidden'))
+STR_FIELDS = frozenset(('name', 'label', 'description',
+                        'descriptionTitle', 'regexpValidator', 'helpText'))
+INT_FIELDS = frozenset(('minLength', 'maxLength', 'minValue', 'maxValue'))
 
 error.register.E081(description='Value should be boolean')
 error.register.E083(description='Wrong name in UI file')
@@ -41,46 +46,47 @@ class UiValidator(base.YamlValidator):
 
     def _valid_application(self, application):
         if not isinstance(application, dict):
-            yield error.report.E084('Application is not a dict', application)
+            yield error.report.E084(_('Application is not a dict'),
+                                    application)
             return
         for name, value in six.iteritems(application):
             if not self._check_name(name):
                 if name != '?':
-                    yield error.report.E083('Wrong name in UI file "{0}"'
+                    yield error.report.E083(_('Wrong name in UI file "{}"')
                                             .format(name), name)
 
     def _valid_version(self, version):
         if str(version) not in UI_VERSION:
-            yield error.report.W082('Incorrect version of UI file "{0}"'
+            yield error.report.W082(_('Incorrect version of UI file "{}"')
                                     .format(version), version)
 
     def _valid_forms(self, forms):
         for named_form in forms:
             for name, form in six.iteritems(named_form):
                 yield self._valid_form(form['fields'])
-                yield self._valid_keywords(form.keys(), frozenset(['fields']))
+                yield self._valid_keywords(form.keys(),
+                                           ('fields', 'validators'))
 
     def _valid_form(self, form):
         for named_params in form:
             for key, value in six.iteritems(named_params):
-                if key == 'required':
-                    if not isinstance(value, bool):
-                        yield error.report.E081('Value of {0} should be '
-                                                'boolean not "{1}"'
+                if key in STR_FIELDS:
+                    if not isinstance(value, six.string_types):
+                        yield error.report.E040(_('Value of {} should be '
+                                                  'string not "{}"')
                                                 .format(key, value), key)
-                elif key == 'hidden':
+                elif key in BOOL_FIELDS:
                     if not isinstance(value, bool):
-                        yield error.report.E081('Value of {0} should be '
-                                                'boolean "{1}"'
+                        yield error.report.E081(_('Value of {} should be '
+                                                  'boolean not "{}"')
                                                 .format(key, value), key)
-                elif key in frozenset(['requirements', 'errorMessages',
-                                       'choices', 'widgetMedia',
-                                       'validators']):
-                    pass
+                elif key in INT_FIELDS:
+                    if not isinstance(value, int):
+                        yield error.report.E082(_('Value of {} should be '
+                                                  'int not "{}"')
+                                                .format(key, value), key)
                 elif key == 'type':
                     yield self._valid_field_type(value)
-                else:
-                    yield self._valid_string(value)
 
     def _valid_field_type(self, fqn, can_be_list=True):
         if isinstance(fqn, list):

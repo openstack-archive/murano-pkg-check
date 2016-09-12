@@ -14,6 +14,7 @@
 
 import mock
 
+import yaml
 import yaml.error
 
 from muranopkgcheck import consts
@@ -23,13 +24,21 @@ from muranopkgcheck.tests import base
 
 class FileWrapperTest(base.TestCase):
 
-    def test_file_wrapper(self):
+    @mock.patch('muranopkgcheck.pkg_loader.yaml')
+    def test_file_wrapper(self, m_yaml):
+        m_yaml.load_all.side_effect = yaml.load_all
         fake_pkg = mock.Mock()
         fake_pkg.open_file.side_effect = \
             lambda f: mock.mock_open(read_data='text')()
         f = pkg_loader.FileWrapper(fake_pkg, 'fake_path')
         self.assertEqual('text', f.raw())
+
         self.assertEqual(['text'], f.yaml())
+        m_yaml.load_all.assert_called()
+
+        self.assertEqual(['text'], f.yaml())
+        m_yaml.load_all.reset_mock()
+        m_yaml.load_all.assert_not_called()
 
         fake_pkg.open_file.side_effect = \
             lambda f: mock.mock_open(read_data='!@#$%')()
@@ -60,19 +69,32 @@ class FakeLoader(pkg_loader.BaseLoader):
 
 class BaseLoaderTest(base.TestCase):
 
+    @mock.patch.object(FakeLoader, 'read')
     @mock.patch.object(FakeLoader, '_try_load')
     @mock.patch.object(FakeLoader, 'try_set_format')
-    def test_try_load(self, m_format, m_load):
+    def test_try_load(self, m_format, m_load, m_read):
+        m_read.return_value.yaml.return_value = [{'FullName': 'fake'}]
         m_load.return_value = FakeLoader('fake')
-        FakeLoader.try_load('fake')
+        fake_pkg = FakeLoader.try_load('fake')
+        self.assertEqual(m_load.return_value, fake_pkg)
         m_load.assert_called_once_with('fake')
-        m_format.assert_called_once_with()
+        m_format.assert_called_once_with({'FullName': 'fake'})
+
+        m_format.reset_mock()
+        m_read.return_value.yaml.return_value = [{}]
+        self.assertIsNone(FakeLoader.try_load('fake'))
+        m_format.assert_not_called()
+
+        m_format.reset_mock()
+        m_read.return_value.yaml.side_effect = yaml.error.YAMLError()
+        self.assertIsNone(FakeLoader.try_load('fake'))
+        m_format.assert_not_called()
 
     @mock.patch.object(FakeLoader, '_try_load')
     def test_try_set_version(self, m_load):
         m_file_wrapper = mock.Mock()
         m_file = m_file_wrapper.return_value
-        m_file.yaml.return_value = {'Format': 'Fake/42'}
+        m_file.yaml.return_value = [{'Format': 'Fake/42', 'FullName': 'fake'}]
         with mock.patch('muranopkgcheck.pkg_loader.FileWrapper',
                         m_file_wrapper):
             m_load.return_value = FakeLoader('fake')
@@ -82,13 +104,13 @@ class BaseLoaderTest(base.TestCase):
             m_file.yaml.assert_called_once_with()
 
             m_load.return_value = FakeLoader('fake')
-            m_file.yaml.return_value = {'Format': '4.2'}
+            m_file.yaml.return_value = [{'Format': '4.2', 'FullName': 'fake'}]
             loader = FakeLoader.try_load('fake')
             self.assertEqual(consts.DEFAULT_FORMAT, loader.format)
             self.assertEqual('4.2', loader.format_version)
 
             m_load.return_value = FakeLoader('fake')
-            m_file.yaml.return_value = {}
+            m_file.yaml.return_value = [{'FullName': 'fake'}]
             loader = FakeLoader.try_load('fake')
             self.assertEqual(consts.DEFAULT_FORMAT, loader.format)
             self.assertEqual(consts.DEFAULT_FORMAT_VERSION,
@@ -116,17 +138,17 @@ class BaseLoaderTest(base.TestCase):
 
 class DirectoryLoaderTest(base.TestCase):
 
-    def _load_fake_pkg(self):
+    @mock.patch.object(pkg_loader.DirectoryLoader, 'read')
+    @mock.patch.object(pkg_loader.DirectoryLoader, 'try_set_format')
+    @mock.patch.object(pkg_loader.DirectoryLoader, 'exists')
+    def _load_fake_pkg(self, m_exists, m_try_set_format, m_read):
         with mock.patch('muranopkgcheck.pkg_loader.os.path.isdir') as m_isdir:
-            with mock.patch.object(pkg_loader.DirectoryLoader,
-                                   'try_set_format') as m:
-                with mock.patch.object(pkg_loader.DirectoryLoader,
-                                       'exists') as m_exists:
-                    m_exists.return_value = True
-                    m_isdir.return_value = True
-                    loader = pkg_loader.DirectoryLoader.try_load('fake')
-                    m.assert_called_once_with()
-                    return loader
+            m_read.return_value.yaml.return_value = [{'FullName': 'fake'}]
+            m_exists.return_value = True
+            m_isdir.return_value = True
+            loader = pkg_loader.DirectoryLoader.try_load('fake')
+            m_try_set_format.assert_called_once_with({'FullName': 'fake'})
+            return loader
 
     def test_try_load(self):
         # NOTE(sslypushenko) Using mock.patch here as decorator breaks pdb

@@ -18,6 +18,7 @@ import os.path
 import semantic_version
 import six
 
+from muranopkgcheck import consts
 from muranopkgcheck import error
 from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
@@ -113,6 +114,10 @@ class ManifestValidator(base.YamlValidator):
 
     def _valid_ui(self, value):
         if isinstance(value, six.string_types):
+            pkg_type = self._loaded_pkg.read(
+                consts.MANIFEST_PATH).yaml()[0]['Type']
+            if pkg_type == 'Library':
+                return
             if not self._loaded_pkg.exists(os.path.join('UI', value)):
                 yield error.report.W073(_('There is no UI file "{}"'
                                           '').format(value), value)
@@ -121,6 +126,10 @@ class ManifestValidator(base.YamlValidator):
 
     def _valid_logo(self, value):
         if isinstance(value, six.string_types):
+            pkg_type = self._loaded_pkg.read(
+                consts.MANIFEST_PATH).yaml()[0]['Type']
+            if pkg_type == 'Library':
+                return
             if not self._loaded_pkg.exists(value):
                 yield error.report.W074(_('There is no Logo file "{}"'
                                           '').format(value), value)

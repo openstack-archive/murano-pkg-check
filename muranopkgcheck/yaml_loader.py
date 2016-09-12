@@ -55,6 +55,10 @@ class YamlNull(YamlObject):
     def __str__(self):
         return 'null'
 
+    def __bool__(self):
+        return False
+    __nonzero__ = __bool__
+
 
 BaseLoader = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 

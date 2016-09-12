@@ -25,7 +25,7 @@ from muranopkgcheck.validators import base
 
 SUPPORTED_FORMATS = frozenset(['1.0', '1.1', '1.2', '1.3', '1.4'])
 METHOD_KEYWORDS = frozenset(['Body', 'Arguments', 'Usage', 'Scope', 'Meta'])
-METHOD_ARGUMENTS_KEYWORDS = frozenset(['Contract', 'Usage', 'Meta'])
+METHOD_ARGUMENTS_KEYWORDS = frozenset(['Contract', 'Usage', 'Meta', 'Default'])
 PROPERTIES_KEYWORDS = frozenset(['Contract', 'Usage', 'Default', 'Meta'])
 PROPERTIES_USAGE_VALUES = frozenset(['In', 'Out', 'InOut', 'Const', 'Static',
                                      'Runtime', 'Config'])
@@ -38,8 +38,10 @@ error.register.E026(description='Properties should be a dict')
 error.register.E042(description='Not allowed usage')
 error.register.E044(description='Wrong type of namespace')
 error.register.E045(description='Body is not a list or scalar/yaql expression')
-error.register.E046(description='Method is not a dict')
+error.register.E046(description='Method is not a dict or list')
 error.register.E047(description='Missing Contract in property')
+error.register.E048(description='It is not safe to define methods arguments '
+                                'as a dict with several keys')
 error.register.E052(description='Arguments usage is available since 1.4')
 error.register.E053(description='Usage is invalid value ')
 error.register.E054(description='Invalid name of method "{}"')
@@ -111,7 +113,7 @@ class MuranoPLValidator(base.YamlValidator):
             if not contract:
                 return
             for c_key, c_value in six.iteritems(contract):
-                yield self._valid_contract(c_key)
+                yield self._valid_string(c_key)
                 yield self._valid_contract(c_value)
         elif isinstance(contract, six.string_types):
             if not self.yaql_checker(contract) or \
@@ -210,10 +212,17 @@ class MuranoPLValidator(base.YamlValidator):
                                     .format(usage), usage)
 
     def _valid_arguments(self, arguments):
-        if not isinstance(arguments, list):
-            yield error.report.E046(_('Methods arguments should be a list'),
+        if isinstance(arguments, dict) and len(arguments) > 1:
+            yield error.report.E048(_('It is not safe to define methods '
+                                      'arguments as a dict with several keys'),
                                     arguments)
             return
+        elif not isinstance(arguments, (list, dict)):
+            yield error.report.E046(_('Methods arguments should be a list or '
+                                      'dict'), arguments)
+            return
+        if isinstance(arguments, dict):
+            arguments = [arguments]
         for argument in arguments:
             if not isinstance(argument, dict) or len(argument) != 1:
                 yield error.report.E046(_('Methods single argument should be '

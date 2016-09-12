@@ -27,6 +27,7 @@ def check_req(check, required=True):
 
 error.register.E203(description='Value should be string type')
 error.register.E200(description='No value should be here')
+error.register.E204(description='Wrong code structure/assigment')
 error.register.E202(description='Not a valid yaql expression')
 error.register.W202(description='Not a valid yaql expression')
 error.register.E201(description='Not a valid variable name')
@@ -36,12 +37,16 @@ CODE_STRUCTURE = {
     'Try': {
         'keywords': {
             'Try': check_req('codeblock'),
-            'Catch': check_req('empty'),
-            'With': check_req('string', False),
-            'As': check_req('string', False),
-            'Do': check_req('codeblock'),
+            'Catch': check_req('codeblock'),
             'Else': check_req('codeblock', False),
             'Finally': check_req('codeblock', False)}},
+    'As': {
+        'keywords': {
+            'As': check_req('string'),
+            'With': check_req('string', False),
+            'Do': check_req('codeblock'),
+        }
+    },
     'Parallel': {
         'keywords': {
             'Limit': check_req('codeblock', False),
@@ -97,6 +102,11 @@ CODE_STRUCTURE = {
             'Continue': check_req('empty'),
         }
     },
+    'Rethrow': {
+        'keywords': {
+            'Rethrow': check_req('empty'),
+        }
+    },
 }
 
 
@@ -114,20 +124,20 @@ class CheckCodeStructure(object):
 
     def string(self, value):
         if not isinstance(value, six.string_types):
-            yield error.report.E203('Value should be string type '
-                                    '"{0}"'.format(value), value)
+            yield error.report.E203('Value of "{0}" should be a string'
+                                    ''.format(value), value)
 
     def empty(self, value):
         if value:
-            yield error.report.E200('There should be no value here '
+            yield error.report.E200('Statement should be empty, not a '
                                     '"{0}"'.format(value), value)
 
     def yaql(self, value):
         if not self._yaql_checker(value):
             if isinstance(value, bool):
                 return
-            yield error.report.W202('Not a valid yaql expression '
-                                    '"{0}"'.format(value), value)
+            yield error.report.W202('"{0}" is not valid yaql expression'
+                                    ''.format(value), value)
 
     def codeblock(self, codeblocks):
         if isinstance(codeblocks, list):
@@ -140,8 +150,8 @@ class CheckCodeStructure(object):
         key = next(iter(block))
         if not isinstance(key, six.string_types) or\
                 not ASSIGMENT_KEY.match(key):
-            yield error.report.E201('Not valid variable name '
-                                    '"{0}"'.format(key), key)
+            yield error.report.E201('"{0}" is not valid variable name'
+                                    ''.format(key), key)
 
     def _single_block(self, block):
         if isinstance(block, dict):
@@ -160,8 +170,8 @@ class CheckCodeStructure(object):
             if len(block.keys()) == 1:
                 yield self._check_assigment(block)
             else:
-                yield error.report.E200('Wrong code structure/assigment '
-                                        'probably typo', block)
+                yield error.report.E204('Wrong code structure/assigment. '
+                                        'Probably a typo', block)
             return
 
         keywords = value.get('keywords', {})
@@ -169,7 +179,7 @@ class CheckCodeStructure(object):
         block_keys_set = set(block.keys())
         for missing in (kset - block_keys_set):
             if keywords[missing]['required']:
-                yield error.report.E200('Missing keyword "{0}" for "{1}" '
+                yield error.report.E204('Missing keyword "{0}" for "{1}" '
                                         'code structure'
                                         .format(missing, key), block)
         for unknown in (block_keys_set - kset - {key}):
