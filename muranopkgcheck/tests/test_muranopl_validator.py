@@ -16,7 +16,7 @@ from copy import deepcopy
 import mock
 
 from muranopkgcheck.tests import test_validator_helpers as helpers
-from muranopkgcheck.validators.muranopl import MuranoPLValidator
+from muranopkgcheck.validators import muranopl
 
 MURANOPL_BASE = {
     'Name': 'Instance',
@@ -58,7 +58,7 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         super(MuranoPlTests, self).setUp()
         self.loaded_package = mock.Mock()
         self.loaded_package.format_version = '1.4'
-        self.mpl_validator = MuranoPLValidator(self.loaded_package)
+        self.mpl_validator = muranopl.MuranoPLValidator(self.loaded_package)
 
     def test_import(self):
         self.g = self.mpl_validator._valid_import(['aaa.bbb', 'ccc.ddd',
