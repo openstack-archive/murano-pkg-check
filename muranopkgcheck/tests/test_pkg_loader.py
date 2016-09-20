@@ -13,7 +13,9 @@
 #    under the License.
 
 import mock
+import zipfile
 
+import six
 import yaml
 import yaml.error
 
@@ -184,3 +186,59 @@ class DirectoryLoaderTest(base.TestCase):
             self.assertTrue(pkg.exists('1.yaml'))
             m_exists.return_value = False
             self.assertFalse(pkg.exists('1.yaml'))
+
+
+class ZipLoaderTest(base.TestCase):
+
+    @mock.patch.object(pkg_loader.ZipLoader, 'read')
+    @mock.patch.object(pkg_loader.ZipLoader, 'try_set_format')
+    @mock.patch.object(pkg_loader.ZipLoader, 'exists')
+    @mock.patch('muranopkgcheck.pkg_loader.zipfile')
+    def _load_fake_pkg(self, m_zip, m_exists, m_try_set_format, m_read):
+        m_zip_file = m_zip.ZipFile.return_value
+        m_read.return_value.yaml.return_value = [{'FullName': 'fake'}]
+        m_exists.return_value = True
+        loader = pkg_loader.ZipLoader.try_load('fake')
+        m_try_set_format.assert_called_once_with({'FullName': 'fake'})
+        m_zip.ZipFile.assert_called_once_with('fake')
+        return loader, m_zip_file
+
+    def test_try_load(self):
+        pkg, _ = self._load_fake_pkg()
+        self.assertEqual('fake', pkg.path)
+        with mock.patch('muranopkgcheck.pkg_loader.zipfile.ZipFile') as m_zip:
+            m_zip.side_effect = zipfile.BadZipfile
+            pkg = pkg_loader.ZipLoader.try_load('fake')
+            self.assertEqual(None, pkg)
+
+    @mock.patch.object(pkg_loader.ZipLoader, 'read')
+    @mock.patch.object(pkg_loader.ZipLoader, 'try_set_format')
+    @mock.patch.object(pkg_loader.ZipLoader, 'exists')
+    @mock.patch('muranopkgcheck.pkg_loader.zipfile')
+    def test_try_load_from_bytesio(self, m_zip, m_exists, m_try_set_format,
+                                   m_read):
+        m_read.return_value.yaml.return_value = [{'FullName': 'fake'}]
+        m_exists.return_value = True
+        m_content = str('fake') if six.PY2 else bytes('fake', 'latin-1')
+        loader = pkg_loader.ZipLoader.try_load(six.BytesIO(m_content))
+        self.assertIsNotNone(loader)
+        m_try_set_format.assert_called_once_with({'FullName': 'fake'})
+        m_zip.ZipFile.assert_called()
+
+    def test_list_files(self):
+        pkg, m_zip = self._load_fake_pkg()
+        m_zip.namelist.return_value = ['1', '2', 'sub/', 'sub/3', 'sub/4']
+        self.assertEqual(['1', '2', 'sub/3', 'sub/4'],
+                         pkg.list_files())
+        self.assertEqual(['3', '4'],
+                         pkg.list_files(subdir='sub'))
+
+    def test_exist(self):
+        pkg, m_zip = self._load_fake_pkg()
+        self.assertTrue(pkg.exists('1.yaml'))
+        m_zip.getinfo.side_effect = KeyError
+        self.assertFalse(pkg.exists('1.yaml'))
+        m_zip.getinfo.side_effect = [KeyError, None]
+        self.assertTrue(pkg.exists('sub'))
+        m_zip.getinfo.side_effect = [KeyError, KeyError]
+        self.assertFalse(pkg.exists('sub'))

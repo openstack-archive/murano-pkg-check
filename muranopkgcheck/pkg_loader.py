@@ -150,7 +150,10 @@ class ZipLoader(BaseLoader):
 
     def __init__(self, path):
         super(ZipLoader, self).__init__(path)
-        self._zipfile = zipfile.ZipFile(self.path)
+        if hasattr(self.path, 'read'):
+            self._zipfile = zipfile.ZipFile(six.BytesIO(self.path.read()))
+        else:
+            self._zipfile = zipfile.ZipFile(self.path)
 
     @classmethod
     def _try_load(cls, path):
@@ -163,11 +166,12 @@ class ZipLoader(BaseLoader):
         return self._zipfile.open(name, mode)
 
     def list_files(self, subdir=None):
-        files = self._zipfile.namelist()
+        files = [file_ for file_ in self._zipfile.namelist()
+                 if not file_.endswith('/')]
         if subdir is None:
             return files
         subdir_len = len(subdir)
-        return [file_[subdir_len:].lstrip('/') for file_ in files
+        return [file_[subdir_len:].strip('/') for file_ in files
                 if file_.startswith(subdir)]
 
     def exists(self, name):
