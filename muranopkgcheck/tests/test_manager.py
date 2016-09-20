@@ -54,19 +54,16 @@ class ManagerTest(base.TestCase):
             if e in expected_errors:
                 expected_errors.remove(e)
             else:
-                self.force_failure('Unexpected error {}'.format(e))
+                self.fail('Unexpected error {}'.format(e))
         self.assertEqual([], expected_errors, 'Expected errors left')
 
     @mock.patch('muranopkgcheck.manager.pkg_loader')
     @mock.patch('muranopkgcheck.manager.error.report')
     def test_validate(self, m_error, m_pkg_loader):
-        fake_error = m_error.E007.return_value
-        fake_error.code = 'E007'
-        fake_error.to_dict.return_value = {'code': 'E007', 'message': 'Fake'}
-        fake_E000_error = m_error.E000.return_value
-        fake_E000_error.code = 'E000'
-        fake_E000_error.to_dict.return_value = {'code': 'E000',
-                                                'message': 'Fake'}
+        fake_error = error.CheckError('W007', 'Fake')
+        m_error.W007.return_value = fake_error
+        fake_E000_error = error.CheckError('E000', 'Fake')
+        m_error.E000.return_value = fake_E000_error
 
         def error_generator():
             yield fake_error
@@ -97,7 +94,11 @@ class ManagerTest(base.TestCase):
             errors)
 
         m_validator.run.return_value = prepare_errors()
-        errors = mgr.validate(validators=[MockValidator], select=['E007'])
+        errors = mgr.validate(validators=[MockValidator], only_errors=True)
+        self._assert_errors([fake_E000_error, fake_E000_error], errors)
+
+        m_validator.run.return_value = prepare_errors()
+        errors = mgr.validate(validators=[MockValidator], select=['W007'])
         self._assert_errors([fake_error, fake_error], errors)
 
         m_validator.run.return_value = prepare_errors()

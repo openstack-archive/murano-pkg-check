@@ -127,10 +127,15 @@ class Manager(object):
                       '').format(plugin=ep.name, error=err))
         raise err
 
-    def validate(self, validators=None, select=None, ignore=None):
+    def validate(self, validators=None, select=None, ignore=None,
+                 only_errors=False):
         validators = validators or self.validators
         report_chains = []
         for validator in validators:
             v = validator(self.pkg)
             report_chains.append(v.run())
-        return self._to_list(itertools.chain(*report_chains), select, ignore)
+        issues = self._to_list(itertools.chain(*report_chains), select, ignore)
+        if only_errors:
+            return [err for err in issues if err.is_error()]
+        else:
+            return issues

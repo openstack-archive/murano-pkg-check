@@ -35,6 +35,12 @@ class CheckError(Exception):
             serialized[f] = self.__getattribute__(f)
         return serialized
 
+    def is_warning(self):
+        return self.code.split(':')[-1].startswith('W')
+
+    def is_error(self):
+        return self.code.split(':')[-1].startswith('E')
+
     def __repr__(self):
         return 'CheckError({0})'.format(self.message)
 
