@@ -371,3 +371,32 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
             [{'a#': {'Contract': '$.int()'}}])
         self.assertIn('Invalid name of argument "a#"',
                       next(self.g).message)
+
+    def test_cardinality(self):
+        self.g = self.mpl_validator._valid_cardinality('One')
+
+    def test_wrong_cardinality(self):
+        self.g = self.mpl_validator._valid_cardinality('ManyToMany')
+        self.assertIn('Wrong Cardinality "ManyToMany"',
+                      next(self.g).message)
+
+    def test_inherited(self):
+        self.g = self.mpl_validator._valid_inherited(True)
+
+    def test_wrong_inherited(self):
+        self.g = self.mpl_validator._valid_inherited(0)
+        self.assertIn('Inherited is not bool "0"',
+                      next(self.g).message)
+
+    def test_applies(self):
+        self.g = self.mpl_validator._valid_applies('Property')
+
+    def test_wrong_applies(self):
+        self.g = self.mpl_validator._valid_applies('all')
+        self.assertIn('Wrong Applies "all"',
+                      next(self.g).message)
+
+    def test_applies_dict(self):
+        self.g = self.mpl_validator._valid_applies({})
+        self.assertIn('Wrong Applies "{}"',
+                      next(self.g).message)

@@ -29,12 +29,17 @@ METHOD_ARGUMENTS_KEYWORDS = frozenset(['Contract', 'Usage', 'Meta', 'Default'])
 PROPERTIES_KEYWORDS = frozenset(['Contract', 'Usage', 'Default', 'Meta'])
 PROPERTIES_USAGE_VALUES = frozenset(['In', 'Out', 'InOut', 'Const', 'Static',
                                      'Runtime', 'Config'])
+APPLIES_VALUES = frozenset(['Package', 'Type', 'Method', 'Property',
+                            'Argument', 'All'])
+
 CLASSNAME_REGEX = re.compile('^[A-Za-z_]\w*$')
 METHOD_NAME_REGEX = re.compile('^[A-Za-z_\.][\w]*$')
 
 error.register.E011(description='Invalid class name')
 error.register.E025(description='Wrong namespace or FNQ of extended class')
 error.register.E026(description='Properties should be a dict')
+error.register.E027(description='Cardinality is not One or Many')
+error.register.E028(description='Applies has one of not possible values')
 error.register.E042(description='Not allowed usage')
 error.register.E044(description='Wrong type of namespace')
 error.register.E045(description='Body is not a list or scalar/yaql expression')
@@ -60,12 +65,37 @@ class MuranoPLValidator(base.YamlValidator):
         self.code_structure = code_structure.CheckCodeStructure()
 
         self.add_checker(self._null_checker, 'Meta', False)
+        self.add_checker(self._null_checker, 'Usage', False)
+        self.add_checker(self._valid_inherited, 'Inherited', False)
+        self.add_checker(self._valid_cardinality, 'Cardinality', False)
+        self.add_checker(self._valid_applies, 'Applies', False)
         self.add_checker(self._valid_name, 'Name', False)
         self.add_checker(self._valid_extends, 'Extends', False)
         self.add_checker(self._valid_methods, 'Methods', False)
         self.add_checker(self._valid_import, 'Import', False)
         self.add_checker(self._valid_namespaces, 'Namespaces', False)
         self.add_checker(self._valid_properties, 'Properties', False)
+
+    def _valid_inherited(self, inherited):
+        if not isinstance(inherited, bool):
+            yield error.report.E027(_('Inherited is not bool "{0}"')
+                                    .format(inherited), inherited)
+
+    def _valid_cardinality(self, cardinality):
+        if cardinality not in ('One', 'Many'):
+            yield error.report.E027(_('Wrong Cardinality "{0}"')
+                                    .format(cardinality),
+                                    cardinality)
+
+    def _valid_applies(self, applies, allow_list=True):
+        if allow_list and isinstance(applies, list):
+            for apl in applies:
+                yield self._valid_applies(apl, False)
+        else:
+            if not isinstance(applies, six.string_types) or \
+                    applies not in APPLIES_VALUES:
+                yield error.report.E028(
+                    _('Wrong Applies "{0}"').format(applies), applies)
 
     def _valid_import(self, import_, can_be_list=True):
         if can_be_list and isinstance(import_, list):
