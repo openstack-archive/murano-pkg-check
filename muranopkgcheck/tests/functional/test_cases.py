@@ -39,11 +39,11 @@ class DictLoader(pkg_loader.BaseLoader):
 
     def open_file(self, path, mode='r'):
         if self.pkg[path]['format'] == 'raw':
-            sio = io.StringIO(six.text_type(self.pkg[path]['content']))
+            sio = io.BytesIO(six.b(self.pkg[path]['content']))
             setattr(sio, 'name', path)
         elif self.pkg[path]['format'] == 'yaml':
             content = yaml.safe_dump(self.pkg[path]['content'])
-            sio = io.StringIO(six.text_type(content))
+            sio = io.BytesIO(six.b(content))
             setattr(sio, 'name', path)
         else:
             raise ValueError('Unknown type of content')

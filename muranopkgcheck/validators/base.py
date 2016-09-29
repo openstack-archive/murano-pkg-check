@@ -24,6 +24,7 @@ from muranopkgcheck.i18n import _
 FQN_REGEX = re.compile('^([a-zA-Z_$][\w$]*\.)*[a-zA-Z_$][\w$]*$')
 NAME_REGEX = re.compile('^[A-Za-z_][\w]*$')
 
+error.register.E002(description='Yaml Error')
 error.register.E005(description='YAML multi document is not allowed')
 error.register.E020(description='Missing required key')
 error.register.E021(description='Unknown keyword')

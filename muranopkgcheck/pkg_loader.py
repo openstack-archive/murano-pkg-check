@@ -14,7 +14,6 @@
 
 
 import abc
-import io
 import os
 import re
 import sys
@@ -46,7 +45,7 @@ class FileWrapper(object):
 
     def yaml(self):
         if self._yaml is None:
-            sio = io.StringIO(six.text_type(self.raw()))
+            sio = six.BytesIO(self.raw())
             setattr(sio, 'name', self._name)
             self._yaml = list(yaml.load_all(sio,
                                             yaml_loader.YamlLoader))
