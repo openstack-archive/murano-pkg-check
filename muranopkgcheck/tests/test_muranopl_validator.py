@@ -17,6 +17,7 @@ import mock
 
 from muranopkgcheck.tests import test_validator_helpers as helpers
 from muranopkgcheck.validators import muranopl
+from muranopkgcheck import yaml_loader
 
 MURANOPL_BASE = {
     'Name': 'Instance',
@@ -118,6 +119,14 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         self.g = self.mpl_validator._valid_methods(m_dict)
         self.assertIn('Wrong Scope "Wrong"',
                       next(self.g).message)
+
+    def test_methods_list(self):
+        self.g = self.mpl_validator._valid_methods([])
+        self.assertIn('Methods are not a dict',
+                      next(self.g).message)
+
+    def test_methods_null(self):
+        self.g = self.mpl_validator._valid_methods(yaml_loader.YamlNull())
 
     def test_dict_in_body(self):
         m_dict = deepcopy(MURANOPL_BASE['Methods'])

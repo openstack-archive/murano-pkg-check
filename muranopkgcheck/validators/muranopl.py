@@ -21,6 +21,7 @@ from muranopkgcheck.checkers import yaql_checker
 from muranopkgcheck import error
 from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
+from muranopkgcheck import yaml_loader
 
 
 SUPPORTED_FORMATS = frozenset(['1.0', '1.1', '1.2', '1.3', '1.4'])
@@ -188,6 +189,11 @@ class MuranoPLValidator(base.YamlValidator):
                                           '"{}"').format(fqn), fqn)
 
     def _valid_methods(self, value):
+        if not isinstance(value, dict):
+            if not isinstance(value, yaml_loader.YamlNull):
+                yield error.report.E046(_('Methods are not a dict'),
+                                        value)
+            return
         for method_name, method_data in six.iteritems(value):
             if not isinstance(method_data, dict):
                 if method_data:
