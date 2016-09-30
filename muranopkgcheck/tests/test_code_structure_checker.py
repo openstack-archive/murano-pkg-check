@@ -150,6 +150,14 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
         self.assertIn('Value of "213" should be a string',
                       next(self.g).message)
 
+    def test_try_only_do(self):
+        MULTILINE_BODY = [
+            {'Try': ['$port.deploy()'],
+             'Catch': [{
+                 'Do': ['$.string()']}]}
+        ]
+        self.g = self._checker.codeblock(MULTILINE_BODY)
+
     def test_yaql_accept_bool(self):
         self.g = self._checker.yaql(True)
 

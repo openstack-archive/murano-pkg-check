@@ -37,16 +37,9 @@ CODE_STRUCTURE = {
     'Try': {
         'keywords': {
             'Try': check_req('codeblock'),
-            'Catch': check_req('codeblock'),
+            'Catch': check_req('catchblock'),
             'Else': check_req('codeblock', False),
             'Finally': check_req('codeblock', False)}},
-    'As': {
-        'keywords': {
-            'As': check_req('string'),
-            'With': check_req('string', False),
-            'Do': check_req('codeblock'),
-        }
-    },
     'Parallel': {
         'keywords': {
             'Limit': check_req('codeblock', False),
@@ -114,6 +107,7 @@ class CheckCodeStructure(object):
     def __init__(self):
         self._check_mappings = {
             'codeblock': self.codeblock,
+            'catchblock': self.catchblock,
             'predicate': self.yaql,
             'empty': self.empty,
             'expression': self.yaql,
@@ -138,6 +132,22 @@ class CheckCodeStructure(object):
                 return
             yield error.report.W202('"{0}" is not valid yaql expression'
                                     ''.format(value), value)
+
+    def catchblock(self, catchblock):
+        if isinstance(catchblock, list):
+            for block in catchblock:
+                yield self._single_catchblock(block)
+        else:
+            yield self._single_catchblock(catchblock)
+
+    def _single_catchblock(self, catchblock):
+        do = catchblock.get('Do')
+        if not do:
+            yield error.report.E204('Catch is missing "Do" block', catchblock)
+        else:
+            yield self.codeblock(do)
+        yield self.string(catchblock.get('With', ''))
+        yield self.string(catchblock.get('As', ''))
 
     def codeblock(self, codeblocks):
         if isinstance(codeblocks, list):
