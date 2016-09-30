@@ -84,7 +84,7 @@ CODE_STRUCTURE = {
         'keywords': {
             'Match': check_req(('expression', 'codeblock')),
             'Value': check_req('expression'),
-            'Default': check_req('codeblock'),
+            'Default': check_req('codeblock', False),
         }
     },
     'Switch': {
