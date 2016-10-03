@@ -55,6 +55,7 @@ error.register.E060(description='Wrong namespace fqn')
 error.register.W045(description='Unsupported usage type')
 error.register.W011(description='Invalid class name')
 error.register.W048(description='Contract is not valid yaql')
+error.register.W060(description='Wrong namespace fqn')
 
 
 class MuranoPLValidator(base.YamlValidator):
@@ -182,7 +183,7 @@ class MuranoPLValidator(base.YamlValidator):
 
         for name, fqn in six.iteritems(value):
             if not self._check_fqn_name(fqn):
-                yield error.report.E060(_('Wrong namespace fqn '
+                yield error.report.W060(_('Wrong namespace fqn '
                                           '"{}"').format(fqn), fqn)
             if not self._check_name(name) and name != '=':
                 yield error.report.E060(_('Wrong name for namespace '
