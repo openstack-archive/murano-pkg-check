@@ -71,19 +71,63 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         self.assertIn('Wrong namespace or FNQ of extended class "w_ww#"',
                       next(self.g).message)
 
+    def test_correct_name_single(self):
+        self.g = self.mpl_validator._valid_name('A')
+        self.assertEqual(0, len([e for e in self.g]))
+
+    def test_correct_name_upper(self):
+        self.g = self.mpl_validator._valid_name('ABC')
+        self.assertEqual(0, len([e for e in self.g]))
+
+    def test_dot_in_name(self):
+        self.g = self.mpl_validator._valid_name('.')
+        self.assertIn('Invalid class name "."', next(self.g).message)
+
+    def test_startswith_number_in_name(self):
+        self.g = self.mpl_validator._valid_name('1A')
+        self.assertIn('Invalid class name "1A"', next(self.g).message)
+
+    def test_dot_in_name_startswith_dot(self):
+        self.g = self.mpl_validator._valid_name('.A')
+        self.assertIn('Invalid class name ".A"', next(self.g).message)
+
+    def test_dot_in_name_endswith_dot(self):
+        self.g = self.mpl_validator._valid_name('A.')
+        self.assertIn('Invalid class name "A."', next(self.g).message)
+
+    def test_dot_in_name_double_dot(self):
+        self.g = self.mpl_validator._valid_name('A..B')
+        self.assertIn('Invalid class name "A..B"', next(self.g).message)
+
     def test_double_underscored_name(self):
         self.g = self.mpl_validator._valid_name('__Instance')
         self.assertIn('Invalid class name "__Instance"', next(self.g).message)
 
     def test_not_camel_case_name(self):
         self.g = self.mpl_validator._valid_name('notcamelcase')
-        self.assertIn('Invalid class name "notcamelcase"',
+        self.assertIn('Class name "notcamelcase" not in CamelCase',
+                      next(self.g).message)
+
+    def test_not_camel_case_name_upper(self):
+        self.g = self.mpl_validator._valid_name('ABCD')
+        self.assertIn('Class name "ABCD" not in CamelCase',
+                      next(self.g).message)
+
+    def test_not_camel_case_name_first_lower(self):
+        self.g = self.mpl_validator._valid_name('almostCamel')
+        self.assertIn('Class name "almostCamel" not in CamelCase',
                       next(self.g).message)
 
     def test_whitespace_in_name(self):
         name = 'white space'
         self.g = self.mpl_validator._valid_name(name)
         self.assertIn('Invalid class name "white space"',
+                      next(self.g).message)
+
+    def test_name_not_a_string(self):
+        name = 42
+        self.g = self.mpl_validator._valid_name(name)
+        self.assertIn('Class name should be a string',
                       next(self.g).message)
 
     def test_properties_list(self):
@@ -269,10 +313,31 @@ class MuranoPlTests(helpers.BaseValidatorTestClass):
         self.assertIn('Wrong type of Extends field',
                       next(self.g).message)
 
+    def test_method_valid_name(self):
+        self.g = self.mpl_validator._valid_methods({'foo': {}})
+        self.assertEqual(0, len([e for e in self.g]))
+
     def test_method_invalid_name(self):
         m_dict = {'foo#': {}}
         self.g = self.mpl_validator._valid_methods(m_dict)
         self.assertIn('Invalid name of method "foo#"',
+                      next(self.g).message)
+
+    def test_method_invalid_name_dot(self):
+        m_dict = {'.foo': {}}
+        self.g = self.mpl_validator._valid_methods(m_dict)
+        self.assertIn('Invalid name of method ".foo"',
+                      next(self.g).message)
+
+    def test_method_valid_special_name(self):
+        for name in muranopl.SPECIAL_METHODS:
+            m_dict = {name: {}}
+            self.g = self.mpl_validator._valid_methods(m_dict)
+
+    def test_method_invalid_name_number(self):
+        m_dict = {'1abc': {}}
+        self.g = self.mpl_validator._valid_methods(m_dict)
+        self.assertIn('Invalid name of method "1abc"',
                       next(self.g).message)
 
     def test_method_unknown_keyword(self):

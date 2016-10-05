@@ -33,8 +33,9 @@ PROPERTIES_USAGE_VALUES = frozenset(['In', 'Out', 'InOut', 'Const', 'Static',
 APPLIES_VALUES = frozenset(['Package', 'Type', 'Method', 'Property',
                             'Argument', 'All'])
 
-CLASSNAME_REGEX = re.compile('^[A-Za-z_]\w*$')
-METHOD_NAME_REGEX = re.compile('^[A-Za-z_\.][\w]*$')
+CLASSNAME_REGEX = re.compile(r'^[a-zA-Z_]\w*(\.?\w+)*$')
+METHOD_NAME_REGEX = re.compile(r'^[a-zA-Z_]\w*$')
+SPECIAL_METHODS = frozenset(['.init', '.destroy'])
 
 error.register.E011(description='Invalid class name')
 error.register.E025(description='Wrong namespace or FNQ of extended class')
@@ -108,13 +109,21 @@ class MuranoPLValidator(base.YamlValidator):
                                       'class "{0}"').format(import_), import_)
 
     def _valid_name(self, value):
-        if value.startswith('__') or \
-           not CLASSNAME_REGEX.match(value):
+        if not isinstance(value, six.string_types):
+            yield error.report.E011(_('Invalid class name "{}". '
+                                      'Class name should be a string')
+                                    .format(value), value)
+        elif (value.startswith('__') or
+              not CLASSNAME_REGEX.match(value)):
             yield error.report.E011(_('Invalid class name "{}"').format(value),
                                     value)
-        elif not (value != value.lower() and value != value.upper()):
-            yield error.report.W011(_('Invalid class name "{}"').format(value),
-                                    value)
+        else:
+            # NOTE (kzaitsev): allow short uppercase names like Q, IP, CDN
+            if (not value[0].isupper() or
+               (len(value) > 3 and value == value.upper())):
+                yield error.report.W011(_(
+                    'Class name "{}" not in CamelCase').format(value),
+                    value)
 
     def _valid_extends(self, value, can_be_list=True):
         if can_be_list and isinstance(value, list):
@@ -202,7 +211,8 @@ class MuranoPLValidator(base.YamlValidator):
                                             method_name)
                 return
 
-            if not METHOD_NAME_REGEX.match(method_name):
+            if not(method_name in SPECIAL_METHODS or
+                   METHOD_NAME_REGEX.match(method_name)):
                 yield error.report.E054(_('Invalid name of method "{}"')
                                         .format(method_name), method_name)
             scope = method_data.get('Scope')
