@@ -159,7 +159,7 @@ class DirectoryLoaderTest(base.TestCase):
         with mock.patch('muranopkgcheck.pkg_loader.os.path.isdir') as m_isdir:
             m_isdir.return_value = False
             pkg = pkg_loader.DirectoryLoader.try_load('fake')
-            self.assertEqual(None, pkg)
+            self.assertIsNone(pkg)
 
     def test_list_files(self):
         # NOTE(sslypushenko) Using mock.patch here as decorator breaks pdb
@@ -209,7 +209,7 @@ class ZipLoaderTest(base.TestCase):
         with mock.patch('muranopkgcheck.pkg_loader.zipfile.ZipFile') as m_zip:
             m_zip.side_effect = zipfile.BadZipfile
             pkg = pkg_loader.ZipLoader.try_load('fake')
-            self.assertEqual(None, pkg)
+            self.assertIsNone(pkg)
 
     @mock.patch.object(pkg_loader.ZipLoader, 'read')
     @mock.patch.object(pkg_loader.ZipLoader, 'try_set_format')
