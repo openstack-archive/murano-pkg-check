@@ -153,7 +153,7 @@ class MuranoPLValidator(base.YamlValidator):
         elif isinstance(contract, dict):
             if not contract:
                 return
-            for c_key, c_value in six.iteritems(contract):
+            for c_key, c_value in contract.items():
                 yield self._valid_string(c_key)
                 yield self._valid_contract(c_value)
         elif isinstance(contract, six.string_types):
@@ -170,7 +170,7 @@ class MuranoPLValidator(base.YamlValidator):
             yield error.report.E026(_('Properties should be a dict'),
                                     properties)
             return
-        for property_name, property_data in six.iteritems(properties):
+        for property_name, property_data in properties.items():
             usage = property_data.get('Usage')
             if usage:
                 if usage not in PROPERTIES_USAGE_VALUES:
@@ -190,7 +190,7 @@ class MuranoPLValidator(base.YamlValidator):
             yield error.report.E044(_('Wrong type of namespace'), value)
             return
 
-        for name, fqn in six.iteritems(value):
+        for name, fqn in value.items():
             if not self._check_fqn_name(fqn):
                 yield error.report.W060(_('Wrong namespace fqn '
                                           '"{}"').format(fqn), fqn)
@@ -204,7 +204,7 @@ class MuranoPLValidator(base.YamlValidator):
                 yield error.report.E046(_('Methods are not a dict'),
                                         value)
             return
-        for method_name, method_data in six.iteritems(value):
+        for method_name, method_data in value.items():
             if not isinstance(method_data, dict):
                 if method_data:
                     yield error.report.E046(_('Method is not a dict'),

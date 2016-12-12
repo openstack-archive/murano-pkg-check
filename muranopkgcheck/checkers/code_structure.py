@@ -173,7 +173,7 @@ class CheckCodeStructure(object):
         yield self._check_mappings[check](value)
 
     def _check_structure(self, block):
-        for key, value in six.iteritems(CODE_STRUCTURE):
+        for key, value in CODE_STRUCTURE.items():
             if key in block:
                 break
         else:
@@ -195,13 +195,13 @@ class CheckCodeStructure(object):
         for unknown in (block_keys_set - kset - {key}):
             yield error.report.E201('Unknown keyword "{0}" in "{1}"'
                                     .format(unknown, key), unknown)
-        for ckey, cvalue in six.iteritems(keywords):
+        for ckey, cvalue in keywords.items():
             check = cvalue['check']
             data = block.get(ckey)
             if not data:
                 continue
             if isinstance(check, tuple):
-                for left, right in six.iteritems(data):
+                for left, right in data.items():
                     yield self._run_check(check[0], left)
                     yield self._run_check(check[1], right)
             else:

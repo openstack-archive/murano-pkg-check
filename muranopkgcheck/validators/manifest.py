@@ -88,7 +88,7 @@ class ManifestValidator(base.YamlValidator):
         if not isinstance(value, dict):
             yield error.report.E005(_('Require is not a dict type'), value)
             return
-        for fqn, ver in six.iteritems(value):
+        for fqn, ver in value.items():
             if not self._check_fqn_name(fqn):
                 yield error.report.E005(_('Require key is not valid FQN "{}"'
                                           '').format(fqn), fqn)

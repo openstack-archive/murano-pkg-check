@@ -49,7 +49,7 @@ class UiValidator(base.YamlValidator):
             yield error.report.E084(_('Application is not a dict'),
                                     application)
             return
-        for name, value in six.iteritems(application):
+        for name, value in application.items():
             if not self._check_name(name):
                 if name != '?':
                     yield error.report.E083(_('Wrong name in UI file "{}"')
@@ -62,14 +62,14 @@ class UiValidator(base.YamlValidator):
 
     def _valid_forms(self, forms):
         for named_form in forms:
-            for name, form in six.iteritems(named_form):
+            for name, form in named_form.items():
                 yield self._valid_form(form['fields'])
                 yield self._valid_keywords(form.keys(),
                                            ('fields', 'validators'))
 
     def _valid_form(self, form):
         for named_params in form:
-            for key, value in six.iteritems(named_params):
+            for key, value in named_params.items():
                 if key in STR_FIELDS:
                     if not isinstance(value, six.string_types):
                         yield error.report.E040(_('Value of {} should be '

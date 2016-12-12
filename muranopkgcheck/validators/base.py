@@ -118,14 +118,14 @@ class YamlValidator(BaseValidator):
                 file_check = self._checkers.get(None)
                 if file_check:
                     run_helper(None, file_check['checkers'], ast)
-                for key, value in six.iteritems(ast):
+                for key, value in ast.items():
                     checkers = self._checkers.get(key)
                     if checkers:
                         run_helper(key, checkers['checkers'], ast[key])
                     else:
                         reports_chain.append(self._unknown_keyword(key, value))
                 missing = set(key for key, value in
-                              six.iteritems(self._checkers)
+                              self._checkers.items()
                               if value['required']) - set(ast.keys())
                 for m in missing:
                     reports_chain.append([
