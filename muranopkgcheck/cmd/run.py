@@ -18,6 +18,7 @@ import sys
 
 import six
 
+import muranopkgcheck
 from muranopkgcheck import log
 from muranopkgcheck import manager
 
@@ -65,6 +66,11 @@ def parse_cli_args(args=None):
     parser.add_argument('path',
                         type=str,
                         help='Path to package or catalog')
+
+    parser.add_argument('--version',
+                        action='version',
+                        version=muranopkgcheck.__version__,
+                        help="Show program's version number and exit.")
 
     return parser.parse_args(args=args)
 
