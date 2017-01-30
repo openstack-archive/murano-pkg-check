@@ -16,4 +16,4 @@ import pbr.version
 
 
 __version__ = pbr.version.VersionInfo(
-    'muranopkgcheck').version_string()
+    'murano-pkg-check').version_string()
