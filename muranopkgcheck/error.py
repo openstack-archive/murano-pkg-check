@@ -12,8 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from muranopkgcheck.i18n import _LE
-
 errors = dict()
 
 
@@ -64,7 +62,7 @@ class Report(object):
                 kwargs['filename'] = filename or meta.name
             return CheckError(code=code, message=message, **kwargs)
         if code not in self.errors:
-            raise ValueError(_LE('Error {} was not registered').format(code))
+            raise ValueError('Error {} was not registered'.format(code))
         return _report
 
 
@@ -77,7 +75,7 @@ class Register(object):
     def __getattr__(self, code):
         code = ':'.join((self.prefix, code)) if self.prefix else code
         if code in self.errors:
-            raise ValueError(_LE('Error {} is already registered')
+            raise ValueError('Error {} is already registered'
                              .format(code))
 
         def _register(**kwargs):

@@ -23,7 +23,6 @@ import stevedore
 
 from muranopkgcheck import error
 from muranopkgcheck.i18n import _
-from muranopkgcheck.i18n import _LE
 from muranopkgcheck import log
 from muranopkgcheck import pkg_loader
 from muranopkgcheck.validators import VALIDATORS
@@ -123,8 +122,8 @@ class Manager(object):
 
     @staticmethod
     def failure_hook(_, ep, err):
-        LOG.error(_LE('Could not load {plugin}: {error}'
-                      '').format(plugin=ep.name, error=err))
+        LOG.error('Could not load {plugin}: {error}'
+                  ''.format(plugin=ep.name, error=err))
         raise err
 
     def validate(self, validators=None, select=None, ignore=None,
