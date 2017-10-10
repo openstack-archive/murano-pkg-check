@@ -1,0 +1,201 @@
+# Andi Chandler <andi@gowling.com>, 2017. #zanata
+msgid ""
+msgstr ""
+"Project-Id-Version: murano-pkg-check 0.3.1.dev16\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2017-09-21 04:17+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-10-05 03:52+0000\n"
+"Last-Translator: Andi Chandler <andi@gowling.com>\n"
+"Language-Team: English (United Kingdom)\n"
+"Language: en-GB\n"
+"X-Generator: Zanata 3.9.6\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid " See more information in logs."
+msgstr " See more information in logs."
+
+msgid "Application is not a dict"
+msgstr "Application is not a dict"
+
+msgid "Arguments usage is available since 1.4"
+msgstr "Arguments usage is available since 1.4"
+
+msgid "Body is not a list or scalar/yaql expression"
+msgstr "Body is not a list or scalar/yaql expression"
+
+msgid "Can not load package: \"{}\""
+msgstr "Can not load package: \"{}\""
+
+msgid "Checker locals:"
+msgstr "Checker locals:"
+
+msgid "Checker {} failed!"
+msgstr "Checker {} failed!"
+
+msgid "Checker {} from {} failed!"
+msgstr "Checker {} from {} failed!"
+
+msgid "Class name \"{}\" not in CamelCase"
+msgstr "Class name \"{}\" not in CamelCase"
+
+msgid "Classes section should be a dict"
+msgstr "Classes section should be a dict"
+
+msgid "Contract is not valid yaql \"{}\""
+msgstr "Contract is not valid yaql \"{}\""
+
+msgid "File \"{}\" is not present in Manifest, but it is in filesystem"
+msgstr "File \"{}\" is not present in Manifest, but it is in filesystem"
+
+msgid "File \"{}\" is present in Manifest, but not in filesystem"
+msgstr "File \"{}\" is present in Manifest, but not in filesystem"
+
+msgid "Incorrect version of UI file \"{}\""
+msgstr "Incorrect version of UI file \"{}\""
+
+msgid "Inherited is not bool \"{0}\""
+msgstr "Inherited is not bool \"{0}\""
+
+msgid "Invalid FullName \"{}\""
+msgstr "Invalid FullName \"{}\""
+
+msgid "Invalid class name \"{}\""
+msgstr "Invalid class name \"{}\""
+
+msgid "Invalid class name \"{}\". Class name should be a string"
+msgstr "Invalid class name \"{}\". Class name should be a string"
+
+msgid "Invalid name of argument \"{}\""
+msgstr "Invalid name of argument \"{}\""
+
+msgid "Invalid name of method \"{}\""
+msgstr "Invalid name of method \"{}\""
+
+msgid "It is not safe to define methods arguments as a dict with several keys"
+msgstr "It is not safe to define methods arguments as a dict with several keys"
+
+msgid "Logo is not a string"
+msgstr "Logo is not a string"
+
+msgid "Method is not a dict"
+msgstr "Method is not a dict"
+
+msgid "Methods are not a dict"
+msgstr "Methods are not a dict"
+
+msgid "Methods arguments should be a list or dict"
+msgstr "Methods arguments should be a list or dict"
+
+msgid "Methods single argument should be a one key dict"
+msgstr "Methods single argument should be a one key dict"
+
+msgid "Missing \"{}\" in the package"
+msgstr "Missing \"{}\" in the package"
+
+msgid "Missing Contract in property \"{}\""
+msgstr "Missing Contract in property \"{}\""
+
+msgid "Missing required key \"{}\""
+msgstr "Missing required key \"{}\""
+
+msgid "Multi document is not allowed in {}"
+msgstr "Multi document is not allowed in {}"
+
+msgid "Not allowed usage \"{}\""
+msgstr "Not allowed usage \"{}\""
+
+msgid "Not supported format \"{}\""
+msgstr "Not supported format \"{}\""
+
+msgid "Not supported format version \"{}\""
+msgstr "Not supported format version \"{}\""
+
+msgid "Properties should be a dict"
+msgstr "Properties should be a dict"
+
+msgid "Require is not a dict type"
+msgstr "Require is not a dict type"
+
+msgid "Require key is not valid FQN \"{}\""
+msgstr "Require key is not valid FQN \"{}\""
+
+msgid "Scope is not supported version earlier than 1.3\""
+msgstr "Scope is not supported version earlier than 1.3\""
+
+msgid "Tags should be a list"
+msgstr "Tags should be a list"
+
+msgid "There is no Logo file \"{}\""
+msgstr "There is no Logo file \"{}\""
+
+msgid "There is no UI file \"{}\""
+msgstr "There is no UI file \"{}\""
+
+msgid "Type is invalid \"{}\""
+msgstr "Type is invalid \"{}\""
+
+msgid "UI is not a string"
+msgstr "UI is not a string"
+
+msgid "Unknown \"{}\" in the package"
+msgstr "Unknown \"{}\" in the package"
+
+msgid "Unknown keyword \"{}\""
+msgstr "Unknown keyword \"{}\""
+
+msgid "Unsupported usage type \"{}\" "
+msgstr "Unsupported usage type \"{}\" "
+
+msgid "Usage \"{}\" is available from 1.3"
+msgstr "Usage \"{}\" is available from 1.3"
+
+msgid "Usage \"{}\" is deprecated since 1.4"
+msgstr "Usage \"{}\" is deprecated since 1.4"
+
+msgid "Usage is invalid value \"{}\""
+msgstr "Usage is invalid value \"{}\""
+
+msgid "Value is not a string \"{}\""
+msgstr "Value is not a string \"{}\""
+
+msgid "Value of {} should be boolean not \"{}\""
+msgstr "Value of {} should be boolean not \"{}\""
+
+msgid "Value of {} should be int not \"{}\""
+msgstr "Value of {} should be int not \"{}\""
+
+msgid "Value of {} should be string not \"{}\""
+msgstr "Value of {} should be string not \"{}\""
+
+msgid "Version format should be compatible with SemVer not \"{}\""
+msgstr "Version format should be compatible with SemVer not \"{}\""
+
+msgid "Wrong Applies \"{0}\""
+msgstr "Wrong Applies \"{0}\""
+
+msgid "Wrong Cardinality \"{0}\""
+msgstr "Wrong Cardinality \"{0}\""
+
+msgid "Wrong FNQ of extended class \"{}\""
+msgstr "Wrong FNQ of extended class \"{}\""
+
+msgid "Wrong Scope \"{}\""
+msgstr "Wrong Scope \"{}\""
+
+msgid "Wrong name for namespace \"{}\""
+msgstr "Wrong name for namespace \"{}\""
+
+msgid "Wrong name in UI file \"{}\""
+msgstr "Wrong name in UI file \"{}\""
+
+msgid "Wrong namespace fqn \"{}\""
+msgstr "Wrong namespace fqn \"{}\""
+
+msgid "Wrong namespace or FNQ of extended class \"{0}\""
+msgstr "Wrong namespace or FNQ of extended class \"{0}\""
+
+msgid "Wrong type of namespace"
+msgstr "Wrong type of namespace"
