@@ -1,7 +1,14 @@
 - project:
+    templates:
+      - check-requirements
+      - openstack-python-jobs
+      - openstack-python35-jobs
     check:
       jobs:
         - openstack-tox-lower-constraints
+        - openstack-tox-cover:
+            voting: false
+
     gate:
       jobs:
         - openstack-tox-lower-constraints
