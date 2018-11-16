@@ -1,4 +1,4 @@
 murano-pkg-check Style Commandments
 ===============================================
 
-Read the OpenStack Style Commandments http://docs.openstack.org/developer/hacking/
+Read the OpenStack Style Commandments https://docs.openstack.org/hacking/latest/
