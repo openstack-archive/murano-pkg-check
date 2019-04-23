@@ -42,6 +42,6 @@ errors and warnings for all packages found.
 
 * Free software: Apache license
 * Documentation: http://docs.openstack.org/developer/murano-pkg-check
-* Source: http://git.openstack.org/cgit/openstack/murano-pkg-check
+* Source: http://opendev.org/openstack/murano-pkg-check
 * Bugs: http://bugs.launchpad.net/murano
 
