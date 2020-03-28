@@ -19,11 +19,12 @@ from muranopkgcheck.checkers import yaql_checker
 from muranopkgcheck import error
 
 
-ASSIGMENT_KEY = re.compile('^\$.?[\w]')
+ASSIGMENT_KEY = re.compile(r'^\$.?[\w]')
 
 
 def check_req(check, required=True):
     return locals()
+
 
 error.register.E203(description='Value should be string type')
 error.register.E200(description='No value should be here')

@@ -38,7 +38,7 @@ error.register.W100(description='Not known type. Probably typo')
 
 class UiValidator(base.YamlValidator):
     def __init__(self, loaded_package):
-        super(UiValidator, self).__init__(loaded_package, 'UI/.*\.yaml$')
+        super(UiValidator, self).__init__(loaded_package, r'UI/.*\.yaml$')
         self.add_checker(self._valid_forms, 'Forms', False)
         self.add_checker(self._null_checker, 'Templates', False)
         self.add_checker(self._valid_application, 'Application', False)

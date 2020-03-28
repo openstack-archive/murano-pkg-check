@@ -62,7 +62,7 @@ error.register.W060(description='Wrong namespace fqn')
 class MuranoPLValidator(base.YamlValidator):
     def __init__(self, loaded_package):
         super(MuranoPLValidator, self).__init__(loaded_package,
-                                                'Classes/.*\.yaml$',
+                                                r'Classes/.*\.yaml$',
                                                 True)
         self.yaql_checker = yaql_checker.YaqlChecker()
         self.code_structure = code_structure.CheckCodeStructure()

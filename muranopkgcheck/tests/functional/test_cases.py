@@ -79,6 +79,7 @@ def load_cases():
             cases.extend(list(yaml.load_all(f)))
     return cases
 
+
 cases = load_cases()
 
 

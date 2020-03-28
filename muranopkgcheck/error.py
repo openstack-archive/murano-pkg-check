@@ -84,5 +84,6 @@ class Register(object):
             self.errors[code] = props
         return _register
 
+
 report = Report(errors)
 register = Register(errors)

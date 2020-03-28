@@ -41,5 +41,6 @@ def main():
     with open('doc/source/_errors_list.rst', 'w') as f:
         f.write(r)
 
+
 if __name__ == '__main__':
     main()

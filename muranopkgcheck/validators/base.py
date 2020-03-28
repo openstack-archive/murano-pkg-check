@@ -21,8 +21,8 @@ import six
 from muranopkgcheck import error
 from muranopkgcheck.i18n import _
 
-FQN_REGEX = re.compile('^([a-zA-Z_$][\w$]*\.)*[a-zA-Z_$][\w$]*$')
-NAME_REGEX = re.compile('^[A-Za-z_][\w]*$')
+FQN_REGEX = re.compile(r'^([a-zA-Z_$][\w$]*\.)*[a-zA-Z_$][\w$]*$')
+NAME_REGEX = re.compile(r'^[A-Za-z_][\w]*$')
 
 error.register.E002(description='Yaml Error')
 error.register.E005(description='YAML multi document is not allowed')

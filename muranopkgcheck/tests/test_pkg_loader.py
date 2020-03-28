@@ -121,9 +121,9 @@ class BaseLoaderTest(base.TestCase):
     def test_search_for(self):
         fake = FakeLoader('fake')
         self.assertEqual(['1.yaml', 'sub/3.yaml'],
-                         list(fake.search_for('.*\.yaml$')))
+                         list(fake.search_for(r'.*\.yaml$')))
         self.assertEqual(['3.yaml'],
-                         list(fake.search_for('.*\.yaml$', subdir='sub')))
+                         list(fake.search_for(r'.*\.yaml$', subdir='sub')))
 
     def test_read(self):
         fake = FakeLoader('fake')

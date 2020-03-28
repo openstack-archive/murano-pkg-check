@@ -142,5 +142,6 @@ def main():
     else:
         print('No errors found!')
 
+
 if __name__ == '__main__':
     sys.exit(main())

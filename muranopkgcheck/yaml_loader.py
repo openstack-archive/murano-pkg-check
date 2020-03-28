@@ -89,6 +89,7 @@ class YamlLoader(BaseLoader):
         value.__yaml_meta__ = node.start_mark
         return value
 
+
 YamlLoader.add_constructor(
     u'tag:yaml.org,2002:seq',
     YamlLoader.construct_yaml_seq)
