@@ -12,8 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
-
 from muranopkgcheck.checkers import code_structure
 from muranopkgcheck.tests import test_validator_helpers as helpers
 
@@ -97,7 +95,7 @@ class CodeStructureTest(helpers.BaseValidatorTestClass):
         self.g = self._checker.codeblock(MULTILINE_BODY)
         p1 = next(self.g)
         p2 = next(self.g)
-        six.assertCountEqual(self, [
+        self.assertCountEqual([
             'Unknown keyword "Does" in "While"',
             'Missing keyword "Do" for "While" code structure'],
             [p1.message, p2.message])

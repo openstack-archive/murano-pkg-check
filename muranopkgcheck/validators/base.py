@@ -16,8 +16,6 @@ import abc
 import itertools
 import re
 
-import six
-
 from muranopkgcheck import error
 from muranopkgcheck.i18n import _
 
@@ -32,8 +30,7 @@ error.register.E040(description='Value should be string')
 error.register.W010(description='Unknown keyword')
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseValidator(object):
+class BaseValidator(object, metaclass=abc.ABCMeta):
 
     def __init__(self, loaded_package, _filter='.*'):
         self._loaded_pkg = loaded_package
@@ -44,22 +41,22 @@ class BaseValidator(object):
         pass
 
     def _valid_string(self, value):
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, str):
             yield error.report.E040(_('Value is not a string "{}"'
                                       '').format(value), value)
 
     def _check_name(self, name):
-        if isinstance(name, six.string_types) and NAME_REGEX.match(name):
+        if isinstance(name, str) and NAME_REGEX.match(name):
             return True
         return False
 
     def _check_fqn_name(self, fqn):
-        if isinstance(fqn, six.string_types) and FQN_REGEX.match(fqn):
+        if isinstance(fqn, str) and FQN_REGEX.match(fqn):
             return True
         return False
 
     def _check_ns_fqn_name(self, ns_fqn):
-        if isinstance(ns_fqn, six.string_types):
+        if isinstance(ns_fqn, str):
             if ':' in ns_fqn:
                 ns, fqn = ns_fqn.split(':', 1)
                 if NAME_REGEX.match(ns) and FQN_REGEX.match(fqn):

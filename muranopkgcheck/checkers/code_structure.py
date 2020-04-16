@@ -13,7 +13,6 @@
 #    under the License.
 
 import re
-import six
 
 from muranopkgcheck.checkers import yaql_checker
 from muranopkgcheck import error
@@ -118,7 +117,7 @@ class CheckCodeStructure(object):
         self._yaql_checker = yaql_checker.YaqlChecker()
 
     def string(self, value):
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, str):
             yield error.report.E203('Value of "{0}" should be a string'
                                     ''.format(value), value)
 
@@ -159,7 +158,7 @@ class CheckCodeStructure(object):
 
     def _check_assigment(self, block):
         key = next(iter(block))
-        if not isinstance(key, six.string_types) or\
+        if not isinstance(key, str) or\
                 not ASSIGMENT_KEY.match(key):
             yield error.report.E201('"{0}" is not valid variable name'
                                     ''.format(key), key)
@@ -167,7 +166,7 @@ class CheckCodeStructure(object):
     def _single_block(self, block):
         if isinstance(block, dict):
             yield self._check_structure(block)
-        elif isinstance(block, six.string_types):
+        elif isinstance(block, str):
             yield self.yaql(block)
 
     def _run_check(self, check, value):

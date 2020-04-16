@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
 import yaml
 
 __all__ = ['YamlLoader']
@@ -47,7 +46,7 @@ class YamlSequence(YamlObject, list):
     pass
 
 
-class YamlString(YamlObject, six.text_type):
+class YamlString(YamlObject, str):
     pass
 
 

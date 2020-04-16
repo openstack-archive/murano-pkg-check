@@ -16,8 +16,6 @@ import argparse
 import os
 import sys
 
-import six
-
 import muranopkgcheck
 from muranopkgcheck import log
 from muranopkgcheck import manager
@@ -130,11 +128,11 @@ def main():
         else:
             errors = run(args)
     except ValueError as e:
-        LOG.error(six.text_type(e))
-        print(six.text_type(e))
+        LOG.error(str(e))
+        print(str(e))
         return 2
     except Exception as e:
-        LOG.critical(six.text_type(e), exc_info=sys.exc_info())
+        LOG.critical(str(e), exc_info=sys.exc_info())
         return 3
     if errors:
         print(errors)

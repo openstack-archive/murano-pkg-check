@@ -16,7 +16,6 @@ import io
 import os
 
 import oslotest.base
-import six
 import testscenarios
 import yaml
 
@@ -39,11 +38,11 @@ class DictLoader(pkg_loader.BaseLoader):
 
     def open_file(self, path, mode='r'):
         if self.pkg[path]['format'] == 'raw':
-            sio = io.BytesIO(six.b(self.pkg[path]['content']))
+            sio = io.BytesIO(self.pkg[path]['content'].encode())
             setattr(sio, 'name', path)
         elif self.pkg[path]['format'] == 'yaml':
             content = yaml.safe_dump(self.pkg[path]['content'])
-            sio = io.BytesIO(six.b(content))
+            sio = io.BytesIO(content.encode())
             setattr(sio, 'name', path)
         else:
             raise ValueError('Unknown type of content')

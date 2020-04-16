@@ -12,10 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from io import BytesIO
 import mock
 import zipfile
 
-import six
 import yaml
 import yaml.error
 
@@ -31,9 +31,9 @@ class FileWrapperTest(base.TestCase):
         m_yaml.load_all.side_effect = yaml.load_all
         fake_pkg = mock.Mock()
         fake_pkg.open_file.side_effect = \
-            lambda f: mock.mock_open(read_data=six.b('text'))()
+            lambda f: mock.mock_open(read_data=b'text')()
         f = pkg_loader.FileWrapper(fake_pkg, 'fake_path')
-        self.assertEqual(six.b('text'), f.raw())
+        self.assertEqual(b'text', f.raw())
 
         self.assertEqual(['text'], f.yaml())
         m_yaml.load_all.assert_called()
@@ -43,9 +43,9 @@ class FileWrapperTest(base.TestCase):
         m_yaml.load_all.assert_not_called()
 
         fake_pkg.open_file.side_effect = \
-            lambda f: mock.mock_open(read_data=six.b('!@#$%'))()
-        f = pkg_loader.FileWrapper(fake_pkg, six.b('fake_path'))
-        self.assertEqual(six.b('!@#$%'), f.raw())
+            lambda f: mock.mock_open(read_data=b'!@#$%')()
+        f = pkg_loader.FileWrapper(fake_pkg, b'fake_path')
+        self.assertEqual(b'!@#$%', f.raw())
         self.assertRaises(yaml.error.YAMLError, f.yaml)
 
 
@@ -219,8 +219,8 @@ class ZipLoaderTest(base.TestCase):
                                    m_read):
         m_read.return_value.yaml.return_value = [{'FullName': 'fake'}]
         m_exists.return_value = True
-        m_content = six.b('fake')
-        loader = pkg_loader.ZipLoader.try_load(six.BytesIO(m_content))
+        m_content = b'fake'
+        loader = pkg_loader.ZipLoader.try_load(BytesIO(m_content))
         self.assertIsNotNone(loader)
         m_try_set_format.assert_called_once_with({'FullName': 'fake'})
         m_zip.ZipFile.assert_called()

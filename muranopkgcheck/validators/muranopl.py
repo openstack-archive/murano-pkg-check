@@ -14,8 +14,6 @@
 
 import re
 
-import six
-
 from muranopkgcheck.checkers import code_structure
 from muranopkgcheck.checkers import yaql_checker
 from muranopkgcheck import error
@@ -95,7 +93,7 @@ class MuranoPLValidator(base.YamlValidator):
             for apl in applies:
                 yield self._valid_applies(apl, False)
         else:
-            if not isinstance(applies, six.string_types) or \
+            if not isinstance(applies, str) or \
                     applies not in APPLIES_VALUES:
                 yield error.report.E028(
                     _('Wrong Applies "{0}"').format(applies), applies)
@@ -109,7 +107,7 @@ class MuranoPLValidator(base.YamlValidator):
                                       'class "{0}"').format(import_), import_)
 
     def _valid_name(self, value):
-        if not isinstance(value, six.string_types):
+        if not isinstance(value, str):
             yield error.report.E011(_('Invalid class name "{}". '
                                       'Class name should be a string')
                                     .format(value), value)
@@ -129,7 +127,7 @@ class MuranoPLValidator(base.YamlValidator):
         if can_be_list and isinstance(value, list):
             for cls in value:
                 yield self._valid_extends(cls, False)
-        elif isinstance(value, six.string_types):
+        elif isinstance(value, str):
             if not self._check_ns_fqn_name(value):
                 yield error.report.E025(_('Wrong FNQ of extended class "{}"'
                                           '').format(value), value)
@@ -156,7 +154,7 @@ class MuranoPLValidator(base.YamlValidator):
             for c_key, c_value in contract.items():
                 yield self._valid_string(c_key)
                 yield self._valid_contract(c_value)
-        elif isinstance(contract, six.string_types):
+        elif isinstance(contract, str):
             if not self.yaql_checker(contract) or \
                     not contract.startswith('$.') and contract != '$':
                 yield error.report.W048(_('Contract is not valid yaql "{}"'
@@ -230,7 +228,7 @@ class MuranoPLValidator(base.YamlValidator):
             yield self._valid_keywords(method_data.keys(), METHOD_KEYWORDS)
 
     def _valid_body(self, body):
-        if not isinstance(body, (list, six.string_types, dict)):
+        if not isinstance(body, (list, str, dict)):
             yield error.report.E045(_('Body is not a list or scalar/yaql '
                                     'expression'), body)
         else:
@@ -275,11 +273,11 @@ class MuranoPLValidator(base.YamlValidator):
                 yield error.report.E046(_('Methods single argument should be '
                                           'a one key dict'), argument)
             else:
-                name = next(six.iterkeys(argument))
+                name = next(iter(argument.keys()))
                 if not self._check_name(name):
                     yield error.report.E054(_('Invalid name of argument "{}"')
                                             .format(name), name)
-                val = next(six.itervalues(argument))
+                val = next(iter(argument.values()))
                 contract = val.get('Contract')
                 if contract:
                     yield self._valid_contract(contract)

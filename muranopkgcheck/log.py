@@ -14,8 +14,6 @@
 
 import logging
 
-import six
-
 CRITICAL = logging.CRITICAL
 ERROR = logging.ERROR
 WARNING = logging.WARNING
@@ -38,7 +36,7 @@ def setup(external_logging=None, log_format=LOG_FORMAT, level=DEFAULT_LEVEL):
     console_log_handler = logging.StreamHandler()
     console_log_handler.setFormatter(logging.Formatter(log_format))
     global _loggers
-    for logger in six.itervalues(_loggers):
+    for logger in _loggers.values():
         logger.setLevel(level)
         for h in logger.handlers:
             logger.removeHandler(h)

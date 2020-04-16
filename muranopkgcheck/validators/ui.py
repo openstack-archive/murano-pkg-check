@@ -12,8 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
-
 from muranopkgcheck import error
 from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
@@ -71,7 +69,7 @@ class UiValidator(base.YamlValidator):
         for named_params in form:
             for key, value in named_params.items():
                 if key in STR_FIELDS:
-                    if not isinstance(value, six.string_types):
+                    if not isinstance(value, str):
                         yield error.report.E040(_('Value of {} should be '
                                                   'string not "{}"')
                                                 .format(key, value), key)

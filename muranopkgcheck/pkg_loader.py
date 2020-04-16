@@ -14,12 +14,12 @@
 
 
 import abc
+from io import BytesIO
 import os
 import re
 import sys
 import zipfile
 
-import six
 import yaml
 
 from muranopkgcheck import consts
@@ -45,15 +45,14 @@ class FileWrapper(object):
 
     def yaml(self):
         if self._yaml is None:
-            sio = six.BytesIO(self.raw())
+            sio = BytesIO(self.raw())
             setattr(sio, 'name', self._name)
             self._yaml = list(yaml.load_all(sio,
                                             yaml_loader.YamlLoader))
         return self._yaml
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseLoader(object):
+class BaseLoader(object, metaclass=abc.ABCMeta):
     def __init__(self, path):
         self.path = path
         self._cached_files = dict()
@@ -106,12 +105,12 @@ class BaseLoader(object):
 
     def try_set_format(self, manifest):
         if manifest and 'Format' in manifest:
-            if '/' in six.text_type(manifest['Format']):
+            if '/' in str(manifest['Format']):
                 fmt, version = manifest['Format'].split('/', 1)
                 self.format = fmt
                 self.format_version = version
             else:
-                self.format_version = six.text_type(manifest['Format'])
+                self.format_version = str(manifest['Format'])
 
 
 class DirectoryLoader(BaseLoader):
@@ -150,7 +149,7 @@ class ZipLoader(BaseLoader):
     def __init__(self, path):
         super(ZipLoader, self).__init__(path)
         if hasattr(self.path, 'read'):
-            self._zipfile = zipfile.ZipFile(six.BytesIO(self.path.read()))
+            self._zipfile = zipfile.ZipFile(BytesIO(self.path.read()))
         else:
             self._zipfile = zipfile.ZipFile(self.path)
 

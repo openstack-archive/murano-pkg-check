@@ -16,7 +16,6 @@
 import os.path
 
 import semantic_version
-import six
 
 from muranopkgcheck import consts
 from muranopkgcheck import error
@@ -58,7 +57,7 @@ class ManifestValidator(base.YamlValidator):
         self.add_checker(self._valid_logo_ui_existance)
 
     def _valid_description(self, desc):
-        if not isinstance(desc, six.string_types) and\
+        if not isinstance(desc, str) and\
                 not isinstance(desc, yaml_loader.YamlNull):
             yield error.report.E030('Value is not valid string "{0}"'
                                     .format(desc), desc)
@@ -113,7 +112,7 @@ class ManifestValidator(base.YamlValidator):
             yield self._valid_ui('ui.yaml')
 
     def _valid_ui(self, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             pkg_type = self._loaded_pkg.read(
                 consts.MANIFEST_PATH).yaml()[0]['Type']
             if pkg_type == 'Library':
@@ -125,7 +124,7 @@ class ManifestValidator(base.YamlValidator):
             yield error.report.E072(_('UI is not a string'), value)
 
     def _valid_logo(self, value):
-        if isinstance(value, six.string_types):
+        if isinstance(value, str):
             pkg_type = self._loaded_pkg.read(
                 consts.MANIFEST_PATH).yaml()[0]['Type']
             if pkg_type == 'Library':

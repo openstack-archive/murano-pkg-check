@@ -18,7 +18,6 @@ import pprint
 import sys
 import types
 
-import six
 import stevedore
 
 from muranopkgcheck import error
@@ -32,8 +31,7 @@ LOG = log.getLogger(__name__)
 error.register.E000(description='Check failed')
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Formatter(object):
+class Formatter(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def format(self, error):
