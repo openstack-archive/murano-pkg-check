@@ -13,7 +13,7 @@
 #    under the License.
 
 from io import BytesIO
-import mock
+from unittest import mock
 import zipfile
 
 import yaml

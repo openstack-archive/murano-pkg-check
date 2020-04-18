@@ -13,7 +13,7 @@
 #    under the License.
 
 from copy import deepcopy
-import mock
+from unittest import mock
 
 from muranopkgcheck.tests import test_validator_helpers as helpers
 from muranopkgcheck.validators import muranopl

@@ -13,7 +13,7 @@
 #    under the License.
 
 
-import mock
+from unittest import mock
 
 from muranopkgcheck.tests import test_validator_helpers as helpers
 from muranopkgcheck.validators import manifest
