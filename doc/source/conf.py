@@ -63,9 +63,6 @@ repository_name = 'openstack/murano-pkg-check'
 bug_project = 'murano-pkg-check'
 bug_tag = ''
 
-# Must set this variable to include year, month, day, hours, and minutes.
-html_last_updated_fmt = '%Y-%m-%d %H:%M'
-
 # Output file base name for HTML help builder.
 htmlhelp_basename = '%sdoc' % project
 
