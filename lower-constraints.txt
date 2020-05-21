@@ -17,7 +17,7 @@ MarkupSafe==1.0
 mccabe==0.2.1
 mock==2.0.0
 mox3==0.20.0
-openstackdocstheme==2.0.0
+openstackdocstheme==2.2.1
 os-client-config==1.28.0
 oslo.i18n==3.15.3
 oslotest==3.2.0
@@ -31,7 +31,7 @@ python-mimeparse==1.6.0
 python-subunit==1.0.0
 pytz==2013.6
 PyYAML==3.12
-reno==2.5.0
+reno==3.1.0
 requests==2.14.2
 requestsexceptions==1.2.0
 semantic-version==2.3.1
