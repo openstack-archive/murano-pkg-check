@@ -61,7 +61,7 @@ class Report(object):
                 kwargs['source'] = meta.get_snippet()
                 kwargs['filename'] = filename or meta.name
             return CheckError(code=code, message=message, **kwargs)
-        if code not in self.errors:
+        if not code.startswith('_') and code not in self.errors:
             raise ValueError('Error {} was not registered'.format(code))
         return _report
 
