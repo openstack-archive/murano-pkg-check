@@ -14,7 +14,6 @@
 #    under the License.
 
 import jinja2
-import six
 
 from muranopkgcheck import error
 
@@ -33,7 +32,7 @@ def main():
     print('Validators:')
     for v in validators.VALIDATORS:
         print(v.__name__)
-    errors = sorted(six.itervalues(error.errors),
+    errors = sorted(error.errors.values(),
                     key=lambda item: item['code'])
     t = jinja2.Template(TEMPLATE)
     r = t.render(errors=errors)
