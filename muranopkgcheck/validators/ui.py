@@ -16,7 +16,7 @@ from muranopkgcheck import error
 from muranopkgcheck.i18n import _
 from muranopkgcheck.validators import base
 
-UI_VERSION = frozenset(('1.0', '1', '2', '2.0', '2.1', '2.2', '2.3'))
+UI_VERSION = frozenset(('1.0', '1', '2', '2.0', '2.1', '2.2', '2.3', '2.4'))
 FIELDS_TYPE = frozenset(('string', 'boolean', 'text', 'integer', 'password',
                          'clusterip', 'floatingip', 'domain', 'databaselist',
                          'table', 'flavor', 'keypair', 'image', 'azone',
