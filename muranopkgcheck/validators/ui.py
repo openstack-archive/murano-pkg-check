@@ -20,7 +20,8 @@ UI_VERSION = frozenset(('1.0', '1', '2', '2.0', '2.1', '2.2', '2.3'))
 FIELDS_TYPE = frozenset(('string', 'boolean', 'text', 'integer', 'password',
                          'clusterip', 'floatingip', 'domain', 'databaselist',
                          'table', 'flavor', 'keypair', 'image', 'azone',
-                         'psqlDatabase', 'network', 'choice'))
+                         'psqlDatabase', 'network', 'choice', 'volume',
+                         'zone'))
 BOOL_FIELDS = frozenset(('required', 'hidden'))
 STR_FIELDS = frozenset(('name', 'label', 'description',
                         'descriptionTitle', 'regexpValidator', 'helpText'))
