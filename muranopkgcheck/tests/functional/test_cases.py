@@ -75,7 +75,7 @@ def load_cases():
     cases = []
     for cases_file in cases_files:
         with open(cases_file) as f:
-            cases.extend(list(yaml.load_all(f)))
+            cases.extend(list(yaml.load_all(f, yaml.SafeLoader)))
     return cases
 
 
