@@ -1,9 +1,0 @@
-[run]
-branch = True
-source = muranopkgcheck
-omit =
- .tox/*
- muranopkgcheck/tests/*
-
-[report]
-ignore_errors = True
